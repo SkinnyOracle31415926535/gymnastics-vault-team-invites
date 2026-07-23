@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#050805">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Create and track private NGA and USAG team invitations.">
   <title>Team Invitations</title>
   <link rel="icon" type="image/png" href="icon.png">
@@ -25,20 +25,20 @@
     }
 
     :root {
-      color-scheme: dark;
-      --black: #050805;
-      --panel: #0d140d;
-      --panel-raised: #121d12;
-      --panel-soft: #172417;
+      color-scheme: light;
+      --black: #fbfcf8;
+      --panel: #ffffff;
+      --panel-raised: #f4f6f3;
+      --panel-soft: #eef8ea;
       --green: #ace9a5;
       --green-bright: #71d85e;
       --green-outline: #28c926;
       --green-deep: #345e2b;
       --yellow: #fff000;
-      --white: #f7f9f3;
-      --muted: #b8c7b5;
-      --danger: #ff7b73;
-      --shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+      --white: #111111;
+      --muted: #465044;
+      --danger: #b42318;
+      --shadow: 0 14px 38px rgba(52, 94, 43, 0.12);
       --radius: 18px;
       --font: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
     }
@@ -56,8 +56,7 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 8% -10%, rgba(113, 216, 94, 0.16), transparent 30rem),
-        radial-gradient(circle at 100% 5%, rgba(255, 240, 0, 0.08), transparent 26rem),
+        linear-gradient(135deg, rgba(255, 240, 0, 0.1), rgba(255, 255, 255, 0) 22rem),
         var(--black);
       color: var(--white);
       font-family: var(--font);
@@ -107,14 +106,14 @@
       padding: 20px 22px;
       border: 1px solid rgba(40, 201, 38, 0.48);
       border-radius: var(--radius);
-      background: rgba(13, 20, 13, 0.93);
+      background: rgba(255, 255, 255, 0.96);
       box-shadow: var(--shadow);
     }
 
     .brand-kicker,
     .eyebrow {
       margin: 0 0 4px;
-      color: var(--yellow);
+      color: var(--white);
       font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.18em;
@@ -130,14 +129,14 @@
 
     h1 {
       margin-bottom: 2px;
-      color: var(--green);
+      color: var(--white);
       font-size: clamp(2rem, 4vw, 3.45rem);
       line-height: 0.95;
     }
 
     .brand-divider {
       margin: 6px 0 0;
-      color: var(--green-bright);
+      color: var(--white);
       font-size: 0.96rem;
       letter-spacing: 0.1em;
     }
@@ -162,14 +161,14 @@
       border: 1px solid var(--green-outline);
       border-radius: 11px;
       background: var(--panel-soft);
-      color: var(--green);
+      color: var(--white);
       font-weight: 700;
       transition: transform 140ms ease, background 140ms ease, color 140ms ease;
     }
 
     .button:hover {
       transform: translateY(-1px);
-      background: var(--green-deep);
+      background: var(--green);
       color: var(--white);
     }
 
@@ -181,18 +180,19 @@
 
     .button-primary {
       background: var(--green-bright);
-      color: #071007;
+      color: var(--white);
     }
 
     .button-yellow {
       border-color: var(--yellow);
-      background: var(--yellow);
-      color: #111;
+      background: linear-gradient(135deg, rgba(255, 240, 0, 0.3), rgba(255, 255, 255, 0.96));
+      color: var(--white);
     }
 
     .button-danger {
-      border-color: rgba(255, 123, 115, 0.65);
-      color: #ffc2bd;
+      border-color: rgba(180, 35, 24, 0.55);
+      background: #fff7f6;
+      color: var(--white);
     }
 
     .program-bar {
@@ -210,7 +210,7 @@
       border: 1px solid rgba(40, 201, 38, 0.55);
       border-radius: 15px;
       background: var(--panel);
-      color: var(--muted);
+      color: var(--white);
       text-align: left;
       transition: border 140ms ease, background 140ms ease, color 140ms ease;
     }
@@ -227,17 +227,17 @@
 
     .program-tab[aria-selected="true"] {
       border-color: var(--yellow);
-      background: var(--green);
-      color: #111;
-      box-shadow: inset 0 -5px 0 var(--yellow);
+      background: linear-gradient(135deg, var(--green), rgba(255, 240, 0, 0.16));
+      color: var(--white);
+      box-shadow: inset 0 -3px 0 var(--yellow);
     }
 
     .program-tab[aria-selected="true"]::after {
-      content: "✧";
+      content: "*";
       position: absolute;
       top: 6px;
       right: 14px;
-      color: #111;
+      color: var(--white);
       font-size: 1.6rem;
     }
 
@@ -252,12 +252,12 @@
       padding: 11px 15px;
       border-left: 4px solid var(--green-outline);
       border-radius: 11px;
-      background: rgba(23, 36, 23, 0.88);
+      background: var(--panel-raised);
     }
 
     .stat-card strong {
       display: block;
-      color: var(--yellow);
+      color: var(--white);
       font-size: 1.32rem;
     }
 
@@ -277,8 +277,8 @@
       min-width: 0;
       border: 1px solid rgba(40, 201, 38, 0.42);
       border-radius: var(--radius);
-      background: rgba(13, 20, 13, 0.94);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 12px 30px rgba(52, 94, 43, 0.1);
     }
 
     .panel-header {
@@ -292,7 +292,7 @@
 
     .panel-header h2 {
       margin: 0;
-      color: var(--green);
+      color: var(--white);
       font-size: 1.25rem;
     }
 
@@ -316,13 +316,13 @@
       padding: 9px 11px;
       border: 1px solid rgba(113, 216, 94, 0.45);
       border-radius: 10px;
-      background: #090e09;
+      background: #ffffff;
       color: var(--white);
     }
 
     input::placeholder,
     textarea::placeholder {
-      color: #7f917d;
+      color: #687466;
       opacity: 1;
     }
 
@@ -345,7 +345,7 @@
       padding: 12px;
       border: 1px solid rgba(113, 216, 94, 0.28);
       border-radius: 12px;
-      background: #0b110b;
+      background: #ffffff;
       color: var(--white);
       text-align: left;
     }
@@ -357,7 +357,7 @@
 
     .record-card.active {
       border-color: var(--yellow);
-      background: rgba(52, 94, 43, 0.48);
+      background: linear-gradient(135deg, rgba(172, 233, 165, 0.72), rgba(255, 240, 0, 0.1));
       box-shadow: inset 4px 0 0 var(--yellow);
     }
 
@@ -365,7 +365,7 @@
       display: block;
       margin-bottom: 5px;
       overflow: hidden;
-      color: var(--green);
+      color: var(--white);
       font-size: 1.08rem;
       font-weight: 700;
       text-overflow: ellipsis;
@@ -389,24 +389,26 @@
       border: 1px solid var(--green-outline);
       border-radius: 999px;
       background: var(--panel-soft);
-      color: var(--green);
+      color: var(--white);
       font-size: 0.78rem;
       font-weight: 700;
     }
 
     .status-accepted {
       background: var(--green-bright);
-      color: #071007;
+      color: var(--white);
     }
 
     .status-declined {
       border-color: var(--danger);
-      color: #ffc2bd;
+      background: #fff2f1;
+      color: var(--white);
     }
 
     .status-hold {
       border-color: var(--yellow);
-      color: var(--yellow);
+      background: rgba(255, 240, 0, 0.12);
+      color: var(--white);
     }
 
     .empty-list,
@@ -422,7 +424,7 @@
     .preview-placeholder strong {
       display: block;
       margin-bottom: 7px;
-      color: var(--green);
+      color: var(--white);
       font-size: 1.15rem;
     }
 
@@ -446,7 +448,7 @@
       align-items: center;
       gap: 8px;
       margin: 0 0 10px;
-      color: var(--yellow);
+      color: var(--white);
       font-size: 1.03rem;
       font-weight: 700;
     }
@@ -455,7 +457,7 @@
       content: "";
       flex: 1;
       height: 1px;
-      background: rgba(255, 240, 0, 0.34);
+      background: linear-gradient(90deg, var(--green-outline), rgba(255, 240, 0, 0.3));
     }
 
     .form-grid {
@@ -485,12 +487,12 @@
       padding: 9px;
       border: 1px dashed rgba(255, 240, 0, 0.58);
       border-radius: 11px;
-      background: rgba(255, 240, 0, 0.035);
+      background: linear-gradient(135deg, rgba(255, 240, 0, 0.1), rgba(255, 255, 255, 0.78));
     }
 
     .field-wrapper.is-hidden {
       border-color: rgba(255, 123, 115, 0.72);
-      background: rgba(255, 123, 115, 0.055);
+      background: #fff7f6;
     }
 
     .field-wrapper.is-hidden > label,
@@ -503,17 +505,18 @@
       justify-self: end;
       min-height: 30px;
       padding: 4px 10px;
-      border: 1px solid var(--yellow);
+      border: 1px solid var(--green-outline);
       border-radius: 8px;
-      background: #11170f;
-      color: var(--yellow);
+      background: #ffffff;
+      color: var(--white);
       font-size: 0.78rem;
       font-weight: 700;
     }
 
     .field-wrapper.is-hidden .field-visibility-button {
       border-color: var(--green-outline);
-      color: var(--green);
+      background: var(--panel-soft);
+      color: var(--white);
     }
 
     .hide-mode-note {
@@ -521,7 +524,7 @@
       padding: 10px 12px;
       border: 1px solid var(--yellow);
       border-radius: 10px;
-      background: rgba(255, 240, 0, 0.08);
+      background: linear-gradient(135deg, rgba(255, 240, 0, 0.18), rgba(255, 255, 255, 0.9));
       color: var(--white);
       line-height: 1.4;
     }
@@ -529,7 +532,7 @@
     label {
       display: grid;
       gap: 5px;
-      color: var(--green);
+      color: var(--white);
       font-size: 0.91rem;
       font-weight: 700;
     }
@@ -546,7 +549,7 @@
       padding: 13px;
       border: 1px solid rgba(113, 216, 94, 0.34);
       border-radius: 12px;
-      background: #090e09;
+      background: #ffffff;
     }
 
     .checklist-toggle,
@@ -558,7 +561,7 @@
 
     .checklist-toggle {
       gap: 10px;
-      color: var(--green);
+      color: var(--white);
     }
 
     .checklist-toggle input,
@@ -592,11 +595,11 @@
     }
 
     .skill-checklist-header strong {
-      color: var(--yellow);
+      color: var(--white);
     }
 
     .skill-checklist-header span {
-      color: var(--green);
+      color: var(--white);
       font-size: 0.84rem;
       font-weight: 700;
       white-space: nowrap;
@@ -612,12 +615,12 @@
       padding: 11px;
       border: 1px solid rgba(113, 216, 94, 0.23);
       border-radius: 10px;
-      background: #0e170e;
+      background: var(--panel-soft);
     }
 
     .skill-group h4 {
       margin: 0 0 9px;
-      color: var(--green);
+      color: var(--white);
       font-size: 0.95rem;
     }
 
@@ -667,9 +670,9 @@
       overflow: hidden;
       border: 2px solid var(--green-outline);
       border-radius: 16px;
-      background: #080c08;
+      background: #ffffff;
       color: var(--white);
-      box-shadow: 0 16px 46px rgba(0, 0, 0, 0.36);
+      box-shadow: 0 16px 38px rgba(52, 94, 43, 0.14);
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
@@ -680,19 +683,15 @@
       align-content: center;
       justify-items: center;
       padding: 34px 30px;
-      border-bottom: 7px solid var(--yellow);
-      background:
-        linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
-        var(--green);
-      background-size: 26px 26px;
-      color: #071007;
+      border-bottom: 3px solid var(--yellow);
+      background: linear-gradient(145deg, var(--green), #d0f0c0 76%, rgba(255, 240, 0, 0.22));
+      color: var(--white);
       text-align: center;
     }
 
     .invite-mark {
       margin-bottom: 8px;
-      color: #163a15;
+      color: var(--white);
       font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: 0.13em;
@@ -703,7 +702,7 @@
       max-width: 100%;
       margin: 5px 0 8px;
       overflow-wrap: anywhere;
-      color: #050805;
+      color: var(--white);
       font-size: clamp(2.2rem, 5vw, 4rem);
       line-height: 0.92;
     }
@@ -711,16 +710,16 @@
     .invite-program {
       display: inline-flex;
       padding: 7px 14px;
-      border: 2px solid #050805;
+      border: 2px solid var(--white);
       border-radius: 999px;
-      background: var(--yellow);
-      color: #050805;
+      background: linear-gradient(135deg, rgba(255, 240, 0, 0.22), rgba(255, 255, 255, 0.9));
+      color: var(--white);
       font-weight: 700;
     }
 
     .invite-ornament {
       margin: 13px 0 0;
-      color: #163a15;
+      color: var(--white);
       font-size: 1.1rem;
       letter-spacing: 0.13em;
     }
@@ -731,7 +730,7 @@
 
     .invite-intro {
       margin-bottom: 20px;
-      color: #e9f5e6;
+      color: var(--white);
       font-size: 1.04rem;
       line-height: 1.55;
     }
@@ -741,19 +740,19 @@
       padding: 15px 16px;
       border-left: 4px solid var(--green-outline);
       border-radius: 0 11px 11px 0;
-      background: #111a11;
+      background: var(--panel-raised);
       break-inside: avoid;
     }
 
     .invite-section h4 {
       margin: 0 0 7px;
-      color: var(--yellow);
+      color: var(--white);
       font-size: 1.05rem;
     }
 
     .invite-section p {
       margin: 0;
-      color: #e4efe1;
+      color: var(--white);
       line-height: 1.5;
       white-space: pre-line;
     }
@@ -778,7 +777,7 @@
     .detail-tile span {
       display: block;
       margin-bottom: 3px;
-      color: var(--green);
+      color: var(--white);
       font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -800,7 +799,7 @@
     .invite-signature {
       display: block;
       margin-top: 10px;
-      color: var(--green);
+      color: var(--white);
       font-size: 1.28rem;
       font-weight: 700;
     }
@@ -818,7 +817,7 @@
     }
 
     dialog::backdrop {
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(17, 17, 17, 0.36);
       backdrop-filter: blur(5px);
     }
 
@@ -837,7 +836,7 @@
 
     .dialog-header h2 {
       margin: 0;
-      color: var(--green);
+      color: var(--white);
     }
 
     .dialog-body {
@@ -865,7 +864,7 @@
       border: 1px solid var(--green-outline);
       border-radius: 12px;
       background: var(--green);
-      color: #071007;
+      color: var(--white);
       font-weight: 700;
       box-shadow: var(--shadow);
       opacity: 0;
@@ -984,7 +983,7 @@
 
       html,
       body {
-        background: #080c08 !important;
+        background: #ffffff !important;
       }
 
       body * {
@@ -1001,7 +1000,7 @@
         inset: 0 auto auto 0 !important;
         width: 100% !important;
         border: 0 !important;
-        background: #080c08 !important;
+        background: #ffffff !important;
         box-shadow: none !important;
       }
 
@@ -1035,7 +1034,7 @@
       <div>
         <p class="brand-kicker">California Sports Center</p>
         <h1>Team Invitations</h1>
-        <p class="brand-divider" aria-hidden="true">✧༺♥༻∞✧༺♥༻∞✧</p>
+        <p class="brand-divider" aria-hidden="true">+---+---+---+</p>
         <p class="privacy-note">Saved privately in this browser. Nothing is uploaded.</p>
       </div>
       <div class="header-actions" aria-label="Data actions">
@@ -1216,48 +1215,48 @@
             "Hollow hold (10 seconds)",
             "Arch hold (10 seconds)",
             "Tuck hang from bar (5 seconds)",
-            "Straddle sit — chest to floor",
-            "Pike sit — chest to legs",
+            "Straddle sit - chest to floor",
+            "Pike sit - chest to legs",
             "Bridge with straight arms / shoulders over hands",
-            "Fall safely — chin tucked on back fall"
+            "Fall safely - chin tucked on back fall"
           ]
         },
         {
           category: "Floor Basics",
           skills: [
-            "Straight jump — stick landing",
-            "Tuck jump — stick landing",
+            "Straight jump - stick landing",
+            "Tuck jump - stick landing",
             "Straddle jump",
             "Forward roll to stand",
             "Backward roll to stand",
             "Candlestick roll to stand",
-            "Cartwheel — both sides",
+            "Cartwheel - both sides",
             "Round-off",
             "Bridge kickover (spot okay)",
-            "Handstand — momentary",
-            "Handstand — 3+ second hold",
+            "Handstand - momentary",
+            "Handstand - 3+ second hold",
             "Handstand forward roll"
           ]
         },
         {
           category: "Vault",
           skills: [
-            "Hurdle onto board — two-foot punch"
+            "Hurdle onto board - two-foot punch"
           ]
         },
         {
           category: "Tumble Track / Trampoline",
           skills: [
-            "Stays in center — 5 controlled bounces",
+            "Stays in center - 5 controlled bounces",
             "Straight jump stop",
             "Tuck jump",
-            "Seat drop → stand"
+            "Seat drop -> stand"
           ]
         },
         {
           category: "Still Rings",
           skills: [
-            "Safe hang — shoulders active, no swing",
+            "Safe hang - shoulders active, no swing",
             "Tuck hang (3 seconds)",
             "Hanging L hold (3 seconds)",
             "Inverted hang / skin the cat (spot)",
@@ -1271,7 +1270,7 @@
             "Safe support mount / safe dismount",
             "Support hold (5 seconds)",
             "Straddle travel",
-            "Support swings — controlled",
+            "Support swings - controlled",
             "Upper arm swings",
             "Flank dismount"
           ]
@@ -2000,8 +1999,8 @@
           <header class="invite-hero">
             <div class="invite-mark">You Are Invited</div>
             <h3>${escapeHtml(athlete)}</h3>
-            <div class="invite-program">${escapeHtml(invite.program)} Team${level ? ` · ${escapeHtml(level)}` : ""}</div>
-            <p class="invite-ornament" aria-hidden="true">✧༺♥༻∞✧༺♥༻∞✧</p>
+            <div class="invite-program">${escapeHtml(invite.program)} Team${level ? ` - ${escapeHtml(level)}` : ""}</div>
+            <p class="invite-ornament" aria-hidden="true">+---*---+---*---+</p>
           </header>
           <div class="invite-details">
             <p class="eyebrow">${escapeHtml(invitationDate || "Official Team Invitation")}</p>
@@ -2035,7 +2034,7 @@
       const lines = [
         "TEAM INVITATION",
         "",
-        `${athlete} — ${invite.program} Team${level ? ` · ${level}` : ""}`,
+        `${athlete} - ${invite.program} Team${level ? ` - ${level}` : ""}`,
         invitationDate ? formatDate(invitationDate) : "",
         "",
         guardianName ? `Dear ${guardianName},` : "Congratulations!",
