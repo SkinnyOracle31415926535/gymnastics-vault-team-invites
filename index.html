@@ -27,7 +27,7 @@
     :root {
       color-scheme: light;
       --black: #80c14b;
-      --panel: #d7e589;
+      --panel: #f7e98b;
       --panel-raised: #aed456;
       --panel-soft: #c5da40;
       --green: #a2cd42;
@@ -42,14 +42,15 @@
       --radius: 18px;
       --font: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
       --gradient-header: linear-gradient(135deg, #d4e039 0%, #92c73b 52%, #4caf58 88%, var(--yellow) 100%);
-      --gradient-panel: linear-gradient(145deg, #d7e589 0%, #a2cd42 62%, #4caf58 92%, var(--yellow) 100%);
+      --gradient-panel: linear-gradient(145deg, #f7e98b 0%, #a2cd42 62%, #4caf58 92%, var(--yellow) 100%);
       --gradient-card: linear-gradient(135deg, #c5da40 0%, #92c73b 68%, #5fb551 100%);
       --gradient-card-strong: linear-gradient(135deg, #aed456 0%, #5fb551 100%);
-      --gradient-button: linear-gradient(135deg, #d7e589 0%, #80c14b 100%);
+      --gradient-button: linear-gradient(135deg, #f7e98b 0%, #80c14b 100%);
     }
 
     * {
       box-sizing: border-box;
+      scrollbar-color: var(--green-outline) var(--panel);
     }
 
     html {
@@ -262,7 +263,7 @@
     }
 
     .stat-card:nth-child(2) {
-      background: linear-gradient(135deg, #d7e589, #92c73b);
+      background: linear-gradient(135deg, #f7e98b, #92c73b);
     }
 
     .stat-card:nth-child(3) {
@@ -338,6 +339,11 @@
     textarea::placeholder {
       color: #687466;
       opacity: 1;
+    }
+
+    option {
+      background: var(--panel);
+      color: var(--white);
     }
 
     textarea {
