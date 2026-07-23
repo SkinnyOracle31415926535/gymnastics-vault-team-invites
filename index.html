@@ -74,7 +74,9 @@
     }
 
     button {
+      max-width: 100%;
       border: 0;
+      overflow-wrap: anywhere;
     }
 
     button,
@@ -308,6 +310,8 @@
     select,
     textarea {
       width: 100%;
+      min-width: 0;
+      max-width: 100%;
       min-height: 43px;
       padding: 9px 11px;
       border: 1px solid rgba(113, 216, 94, 0.45);
@@ -427,6 +431,7 @@
     }
 
     .editor-section {
+      min-width: 0;
       margin: 0 0 18px;
       padding: 0;
       border: 0;
@@ -459,8 +464,66 @@
       gap: 11px;
     }
 
+    .form-grid > *,
+    .details-grid > *,
+    .checklist-toggle > *,
+    .skill-item > * {
+      min-width: 0;
+    }
+
     .field-full {
       grid-column: 1 / -1;
+    }
+
+    .field-wrapper {
+      min-width: 0;
+    }
+
+    .field-wrapper.in-hide-mode {
+      display: grid;
+      gap: 7px;
+      padding: 9px;
+      border: 1px dashed rgba(255, 240, 0, 0.58);
+      border-radius: 11px;
+      background: rgba(255, 240, 0, 0.035);
+    }
+
+    .field-wrapper.is-hidden {
+      border-color: rgba(255, 123, 115, 0.72);
+      background: rgba(255, 123, 115, 0.055);
+    }
+
+    .field-wrapper.is-hidden > label,
+    .field-wrapper.is-hidden > .skill-checklist {
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    .field-visibility-button {
+      justify-self: end;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--yellow);
+      border-radius: 8px;
+      background: #11170f;
+      color: var(--yellow);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .field-wrapper.is-hidden .field-visibility-button {
+      border-color: var(--green-outline);
+      color: var(--green);
+    }
+
+    .hide-mode-note {
+      margin: 0 0 16px;
+      padding: 10px 12px;
+      border: 1px solid var(--yellow);
+      border-radius: 10px;
+      background: rgba(255, 240, 0, 0.08);
+      color: var(--white);
+      line-height: 1.4;
     }
 
     label {
@@ -520,6 +583,7 @@
 
     .skill-checklist-header {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
@@ -544,6 +608,7 @@
     }
 
     .skill-group {
+      min-width: 0;
       padding: 11px;
       border: 1px solid rgba(113, 216, 94, 0.23);
       border-radius: 10px;
@@ -567,6 +632,7 @@
       font-size: 0.86rem;
       font-weight: 400;
       line-height: 1.35;
+      overflow-wrap: anywhere;
     }
 
     .skill-item.complete span {
@@ -577,8 +643,14 @@
 
     .editor-footer {
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 9px;
       padding-top: 2px;
+    }
+
+    .editor-footer .button-danger {
+      margin-left: auto;
     }
 
     .preview-panel {
@@ -694,6 +766,7 @@
     }
 
     .detail-tile {
+      min-width: 0;
       min-height: 76px;
       padding: 11px 12px;
       border: 1px solid rgba(113, 216, 94, 0.42);
@@ -893,8 +966,13 @@
       }
 
       .panel-actions .button,
-      .preview-actions .button {
+      .preview-actions .button,
+      .editor-footer .button {
         flex: 1 1 120px;
+      }
+
+      .editor-footer .button-danger {
+        margin-left: 0;
       }
     }
 
@@ -1061,6 +1139,7 @@
     const DATA_VERSION = 1;
     const PROGRAMS = ["NGA", "USAG"];
     const STATUSES = ["Draft", "Ready", "Invited", "Accepted", "Declined", "Hold"];
+    const MOVING_FORWARD_STATUSES = new Set(["Invited", "Accepted"]);
     const SKILL_CHECKLISTS = {
       NGA: [
         {
@@ -1240,6 +1319,7 @@
       "startDate", "monthlyTuition", "uniformCost", "assessmentFee",
       "importantDates", "responseDeadline", "nextSteps", "coachName", "privateNotes"
     ];
+    const HIDEABLE_FIELDS = [...INVITE_TEXT_FIELDS, "skillChecklist"];
     const TEMPLATE_TEXT_FIELDS = [
       "level", "practiceSchedule", "startDate", "monthlyTuition",
       "uniformCost", "assessmentFee", "importantDates", "responseDeadline",
@@ -1278,6 +1358,7 @@
     let activeInviteId = null;
     let searchTerm = "";
     let selectedStatus = "All";
+    let hideMode = false;
     let toastTimer = null;
     let state = loadState();
 
@@ -1358,7 +1439,10 @@
         createdAt: safeText(value.createdAt, 80) || new Date().toISOString(),
         updatedAt: safeText(value.updatedAt, 80) || new Date().toISOString(),
         checklistEnabled: value.checklistEnabled === true,
-        skillChecklist: normalizeSkillChecklist(value.skillChecklist, value.program)
+        skillChecklist: normalizeSkillChecklist(value.skillChecklist, value.program),
+        hiddenFields: Array.isArray(value.hiddenFields)
+          ? [...new Set(value.hiddenFields.filter((field) => HIDEABLE_FIELDS.includes(field)))]
+          : []
       };
 
       INVITE_TEXT_FIELDS.forEach((field) => {
@@ -1454,7 +1538,8 @@
         coachName: template.coachName,
         privateNotes: "",
         checklistEnabled: false,
-        skillChecklist: defaultSkillChecklist(program)
+        skillChecklist: defaultSkillChecklist(program),
+        hiddenFields: []
       };
     }
 
@@ -1574,6 +1659,77 @@
       }).join("");
     }
 
+    function isFieldHidden(invite, field) {
+      return invite.hiddenFields.includes(field);
+    }
+
+    function shouldShowMovingForward(invite) {
+      return MOVING_FORWARD_STATUSES.has(invite.status);
+    }
+
+    function editorSection(title, fields) {
+      if (!fields.trim()) return "";
+      return `
+        <fieldset class="editor-section">
+          <legend class="section-title">${escapeHtml(title)}</legend>
+          <div class="form-grid">${fields}</div>
+        </fieldset>`;
+    }
+
+    function renderInviteField(invite, field, fieldMarkup, fullWidth = false) {
+      const hidden = isFieldHidden(invite, field);
+      if (hidden && !hideMode) return "";
+      const classes = [
+        "field-wrapper",
+        fullWidth ? "field-full" : "",
+        hideMode ? "in-hide-mode" : "",
+        hidden ? "is-hidden" : ""
+      ].filter(Boolean).join(" ");
+      return `
+        <div class="${classes}" data-field-wrapper="${escapeHtml(field)}">
+          ${hideMode ? `
+            <button class="field-visibility-button"
+                    type="button"
+                    data-hide-field="${escapeHtml(field)}"
+                    aria-pressed="${hidden}">
+              ${hidden ? "Show Field" : "Hide Field"}
+            </button>` : ""}
+          ${fieldMarkup}
+        </div>`;
+    }
+
+    function editorInputField(invite, label, field, placeholder = "", type = "text") {
+      return renderInviteField(invite, field, inputField(label, field, placeholder, type));
+    }
+
+    function editorTextareaField(invite, label, field, placeholder = "", fullWidth = false) {
+      return renderInviteField(
+        invite,
+        field,
+        textareaField(label, field, placeholder),
+        fullWidth
+      );
+    }
+
+    function editorSelectField(invite, label, field, options) {
+      return renderInviteField(invite, field, selectField(label, field, options));
+    }
+
+    function editorSkillChecklistField(invite) {
+      const checklist = `
+        <div class="skill-checklist">
+          <label class="checklist-toggle">
+            <input id="skillChecklistEnabled" type="checkbox" ${invite.checklistEnabled ? "checked" : ""}>
+            <span>
+              <strong>Use skill checklist for this athlete</strong>
+              <small>Private coach tracking. Never included in the printed or copied invitation.</small>
+            </span>
+          </label>
+          ${invite.checklistEnabled ? renderSkillChecklist(invite) : ""}
+        </div>`;
+      return renderInviteField(invite, "skillChecklist", checklist, true);
+    }
+
     function renderEditor() {
       const invite = getActiveInvite();
       if (!invite || invite.program !== activeProgram) {
@@ -1585,61 +1741,54 @@
         return;
       }
 
+      const invitationFields = [
+        editorInputField(invite, "Athlete name", "athleteName", "The gymnast receiving the invitation"),
+        editorInputField(invite, "Parent or guardian", "guardianName", "Optional"),
+        editorInputField(invite, "Level or placement", "level", "Example: Level 3"),
+        editorInputField(invite, "Invitation date", "invitationDate", "", "date"),
+        editorSelectField(invite, "Status", "status", STATUSES),
+        editorInputField(invite, "Response deadline", "responseDeadline", "", "date")
+      ].join("");
+      const chosenFields = [
+        editorTextareaField(invite, "Strengths and reasons", "strengths", "Coachability, work ethic, skills, attitude...", true),
+        editorTextareaField(invite, "Coach message", "coachMessage", "A personal welcome or encouraging note...", true),
+        editorTextareaField(invite, "What to work on", "improvementAreas", "Form, strength, consistency, confidence...", true)
+      ].join("");
+      const movingFields = shouldShowMovingForward(invite)
+        ? [
+            editorTextareaField(invite, "Practice schedule", "practiceSchedule", "Days and times"),
+            editorInputField(invite, "Start date", "startDate", "Example: First week of June"),
+            editorInputField(invite, "Monthly tuition", "monthlyTuition", "Leave blank if not ready"),
+            editorInputField(invite, "Uniform cost", "uniformCost", "Leave blank if not ready"),
+            editorInputField(invite, "Assessment fee", "assessmentFee", "Leave blank if not ready"),
+            editorTextareaField(invite, "Important dates", "importantDates", "Camp, pictures, intersquad, meetings...", true),
+            editorTextareaField(invite, "Next steps", "nextSteps", "Registration, change form, contact instructions...", true),
+            editorInputField(invite, "Coach signature", "coachName", "Coach name")
+          ].join("")
+        : "";
+      const privateFields = [
+        editorTextareaField(invite, "Private notes", "privateNotes", "Only visible inside this app. Never included in the invitation.", true),
+        editorSkillChecklistField(invite)
+      ].join("");
+
       elements.editorBody.innerHTML = `
         <div class="editor-body">
-          <fieldset class="editor-section">
-            <legend class="section-title">Invitation</legend>
-            <div class="form-grid">
-              ${inputField("Athlete name", "athleteName", "The gymnast receiving the invitation")}
-              ${inputField("Parent or guardian", "guardianName", "Optional")}
-              ${inputField("Level or placement", "level", "Example: Level 3")}
-              ${inputField("Invitation date", "invitationDate", "", "date")}
-              ${selectField("Status", "status", STATUSES)}
-              ${inputField("Response deadline", "responseDeadline", "", "date")}
-            </div>
-          </fieldset>
-
-          <fieldset class="editor-section">
-            <legend class="section-title">Why They Were Chosen</legend>
-            <div class="form-grid">
-              ${textareaField("Strengths and reasons", "strengths", "Coachability, work ethic, skills, attitude...", true)}
-              ${textareaField("Coach message", "coachMessage", "A personal welcome or encouraging note...", true)}
-              ${textareaField("What to work on", "improvementAreas", "Form, strength, consistency, confidence...", true)}
-            </div>
-          </fieldset>
-
-          <fieldset class="editor-section">
-            <legend class="section-title">Moving Forward</legend>
-            <div class="form-grid">
-              ${textareaField("Practice schedule", "practiceSchedule", "Days and times")}
-              ${inputField("Start date", "startDate", "Example: First week of June")}
-              ${inputField("Monthly tuition", "monthlyTuition", "Leave blank if not ready")}
-              ${inputField("Uniform cost", "uniformCost", "Leave blank if not ready")}
-              ${inputField("Assessment fee", "assessmentFee", "Leave blank if not ready")}
-              ${textareaField("Important dates", "importantDates", "Camp, pictures, intersquad, meetings...", true)}
-              ${textareaField("Next steps", "nextSteps", "Registration, change form, contact instructions...", true)}
-              ${inputField("Coach signature", "coachName", "Coach name")}
-            </div>
-          </fieldset>
-
-          <fieldset class="editor-section">
-            <legend class="section-title">Private Tracking</legend>
-            <div class="form-grid">
-              ${textareaField("Private notes", "privateNotes", "Only visible inside this app. Never included in the invitation.", true)}
-              <div class="skill-checklist field-full">
-                <label class="checklist-toggle">
-                  <input id="skillChecklistEnabled" type="checkbox" ${invite.checklistEnabled ? "checked" : ""}>
-                  <span>
-                    <strong>Use skill checklist for this athlete</strong>
-                    <small>Private coach tracking. Never included in the printed or copied invitation.</small>
-                  </span>
-                </label>
-                ${invite.checklistEnabled ? renderSkillChecklist(invite) : ""}
-              </div>
-            </div>
-          </fieldset>
-
+          ${hideMode ? `
+            <p class="hide-mode-note">
+              Hide mode is on. Choose Hide Field or Show Field, then select Done Hiding.
+              Hidden values stay saved for this athlete.
+            </p>` : ""}
+          ${editorSection("Invitation", invitationFields)}
+          ${editorSection("Why They Were Chosen", chosenFields)}
+          ${editorSection("Moving Forward", movingFields)}
+          ${editorSection("Private Tracking", privateFields)}
           <div class="editor-footer">
+            <button class="button ${hideMode ? "button-yellow" : ""}"
+                    id="hideFieldsButton"
+                    type="button"
+                    aria-pressed="${hideMode}">
+              ${hideMode ? "Done Hiding" : "Hide Fields"}
+            </button>
             <button class="button button-danger" id="deleteInviteButton" type="button">Delete Invitation</button>
           </div>
         </div>`;
@@ -1649,10 +1798,14 @@
         control.addEventListener("input", handleInviteFieldInput);
         control.addEventListener("change", handleInviteFieldInput);
       });
-      document.getElementById("skillChecklistEnabled").addEventListener("change", handleChecklistToggle);
+      document.getElementById("skillChecklistEnabled")?.addEventListener("change", handleChecklistToggle);
       elements.editorBody.querySelectorAll("[data-skill-id]").forEach((control) => {
         control.addEventListener("change", handleSkillChecklistInput);
       });
+      elements.editorBody.querySelectorAll("[data-hide-field]").forEach((button) => {
+        button.addEventListener("click", handleFieldVisibilityToggle);
+      });
+      document.getElementById("hideFieldsButton").addEventListener("click", handleHideModeToggle);
       document.getElementById("deleteInviteButton").addEventListener("click", deleteActiveInvite);
     }
 
@@ -1731,6 +1884,28 @@
       renderStats();
       renderRecords();
       renderPreview();
+      if (field === "status") renderEditor();
+    }
+
+    function handleHideModeToggle() {
+      hideMode = !hideMode;
+      renderEditor();
+    }
+
+    function handleFieldVisibilityToggle(event) {
+      const invite = getActiveInvite();
+      const field = event.currentTarget.dataset.hideField;
+      if (!invite || !HIDEABLE_FIELDS.includes(field)) return;
+      if (isFieldHidden(invite, field)) {
+        invite.hiddenFields = invite.hiddenFields.filter((item) => item !== field);
+      } else {
+        invite.hiddenFields = [...invite.hiddenFields, field];
+      }
+      invite.updatedAt = new Date().toISOString();
+      saveState();
+      renderRecords();
+      renderEditor();
+      renderPreview();
     }
 
     function handleChecklistToggle(event) {
@@ -1758,8 +1933,12 @@
       renderRecords();
     }
 
+    function publicField(invite, field) {
+      return isFieldHidden(invite, field) ? "" : invite[field];
+    }
+
     function displayName(invite) {
-      return invite.athleteName.trim() || "Future Team Member";
+      return publicField(invite, "athleteName").trim() || "Future Team Member";
     }
 
     function previewSection(title, value) {
@@ -1796,18 +1975,23 @@
       }
 
       const athlete = displayName(invite);
-      const greeting = invite.guardianName.trim()
-        ? `Dear ${invite.guardianName.trim()},`
+      const guardianName = publicField(invite, "guardianName");
+      const level = publicField(invite, "level");
+      const invitationDateValue = publicField(invite, "invitationDate");
+      const responseDeadline = publicField(invite, "responseDeadline");
+      const movingForward = shouldShowMovingForward(invite);
+      const greeting = guardianName.trim()
+        ? `Dear ${guardianName.trim()},`
         : "Congratulations!";
-      const invitationDate = formatDate(invite.invitationDate);
-      const responseDate = formatDate(invite.responseDeadline);
+      const invitationDate = formatDate(invitationDateValue);
+      const responseDate = formatDate(responseDeadline);
       const detailTiles = [
-        detailTile("Placement", invite.level),
-        detailTile("Practice Schedule", invite.practiceSchedule),
-        detailTile("Start Date", invite.startDate),
-        detailTile("Monthly Tuition", invite.monthlyTuition),
-        detailTile("Uniform Cost", invite.uniformCost),
-        detailTile("Assessment Fee", invite.assessmentFee),
+        detailTile("Placement", level),
+        movingForward ? detailTile("Practice Schedule", publicField(invite, "practiceSchedule")) : "",
+        movingForward ? detailTile("Start Date", publicField(invite, "startDate")) : "",
+        movingForward ? detailTile("Monthly Tuition", publicField(invite, "monthlyTuition")) : "",
+        movingForward ? detailTile("Uniform Cost", publicField(invite, "uniformCost")) : "",
+        movingForward ? detailTile("Assessment Fee", publicField(invite, "assessmentFee")) : "",
         detailTile("Response By", responseDate)
       ].join("");
 
@@ -1816,7 +2000,7 @@
           <header class="invite-hero">
             <div class="invite-mark">You Are Invited</div>
             <h3>${escapeHtml(athlete)}</h3>
-            <div class="invite-program">${escapeHtml(invite.program)} Team${invite.level ? ` · ${escapeHtml(invite.level)}` : ""}</div>
+            <div class="invite-program">${escapeHtml(invite.program)} Team${level ? ` · ${escapeHtml(level)}` : ""}</div>
             <p class="invite-ornament" aria-hidden="true">✧༺♥༻∞✧༺♥༻∞✧</p>
           </header>
           <div class="invite-details">
@@ -1825,44 +2009,60 @@
               ${escapeHtml(greeting)}<br>
               We are excited to invite ${escapeHtml(athlete)} to join the ${escapeHtml(invite.program)} competitive team.
             </p>
-            ${previewSection("Why You Were Chosen", invite.strengths)}
-            ${previewSection("A Note From Your Coach", invite.coachMessage)}
+            ${previewSection("Why You Were Chosen", publicField(invite, "strengths"))}
+            ${previewSection("A Note From Your Coach", publicField(invite, "coachMessage"))}
             ${detailTiles ? `<div class="details-grid">${detailTiles}</div>` : ""}
-            ${previewSection("What To Work On", invite.improvementAreas)}
-            ${previewSection("Important Dates", invite.importantDates)}
-            ${previewSection("Next Steps", invite.nextSteps)}
+            ${previewSection("What To Work On", publicField(invite, "improvementAreas"))}
+            ${movingForward ? previewSection("Important Dates", publicField(invite, "importantDates")) : ""}
+            ${movingForward ? previewSection("Next Steps", publicField(invite, "nextSteps")) : ""}
             <div class="invite-closing">
               We are proud of your effort and excited about what comes next.
-              <span class="invite-signature">${escapeHtml(invite.coachName || "Your Coaching Team")}</span>
+              <span class="invite-signature">${escapeHtml(
+                movingForward ? publicField(invite, "coachName") || "Your Coaching Team" : "Your Coaching Team"
+              )}</span>
             </div>
           </div>
         </article>`;
     }
 
     function buildCopyText(invite) {
+      const movingForward = shouldShowMovingForward(invite);
+      const athlete = displayName(invite);
+      const level = publicField(invite, "level");
+      const invitationDate = publicField(invite, "invitationDate");
+      const guardianName = publicField(invite, "guardianName");
+      const responseDeadline = publicField(invite, "responseDeadline");
       const lines = [
         "TEAM INVITATION",
         "",
-        `${displayName(invite)} — ${invite.program} Team${invite.level ? ` · ${invite.level}` : ""}`,
-        invite.invitationDate ? formatDate(invite.invitationDate) : "",
+        `${athlete} — ${invite.program} Team${level ? ` · ${level}` : ""}`,
+        invitationDate ? formatDate(invitationDate) : "",
         "",
-        invite.guardianName ? `Dear ${invite.guardianName},` : "Congratulations!",
-        `We are excited to invite ${displayName(invite)} to join the ${invite.program} competitive team.`,
+        guardianName ? `Dear ${guardianName},` : "Congratulations!",
+        `We are excited to invite ${athlete} to join the ${invite.program} competitive team.`,
         "",
-        invite.strengths ? `WHY YOU WERE CHOSEN\n${invite.strengths}` : "",
-        invite.coachMessage ? `A NOTE FROM YOUR COACH\n${invite.coachMessage}` : "",
-        invite.practiceSchedule ? `PRACTICE SCHEDULE\n${invite.practiceSchedule}` : "",
-        invite.startDate ? `START DATE\n${invite.startDate}` : "",
-        invite.monthlyTuition ? `MONTHLY TUITION\n${invite.monthlyTuition}` : "",
-        invite.uniformCost ? `UNIFORM COST\n${invite.uniformCost}` : "",
-        invite.assessmentFee ? `ASSESSMENT FEE\n${invite.assessmentFee}` : "",
-        invite.improvementAreas ? `WHAT TO WORK ON\n${invite.improvementAreas}` : "",
-        invite.importantDates ? `IMPORTANT DATES\n${invite.importantDates}` : "",
-        invite.nextSteps ? `NEXT STEPS\n${invite.nextSteps}` : "",
-        invite.responseDeadline ? `PLEASE RESPOND BY\n${formatDate(invite.responseDeadline)}` : "",
+        publicField(invite, "strengths") ? `WHY YOU WERE CHOSEN\n${publicField(invite, "strengths")}` : "",
+        publicField(invite, "coachMessage") ? `A NOTE FROM YOUR COACH\n${publicField(invite, "coachMessage")}` : "",
+        movingForward && publicField(invite, "practiceSchedule")
+          ? `PRACTICE SCHEDULE\n${publicField(invite, "practiceSchedule")}` : "",
+        movingForward && publicField(invite, "startDate")
+          ? `START DATE\n${publicField(invite, "startDate")}` : "",
+        movingForward && publicField(invite, "monthlyTuition")
+          ? `MONTHLY TUITION\n${publicField(invite, "monthlyTuition")}` : "",
+        movingForward && publicField(invite, "uniformCost")
+          ? `UNIFORM COST\n${publicField(invite, "uniformCost")}` : "",
+        movingForward && publicField(invite, "assessmentFee")
+          ? `ASSESSMENT FEE\n${publicField(invite, "assessmentFee")}` : "",
+        publicField(invite, "improvementAreas")
+          ? `WHAT TO WORK ON\n${publicField(invite, "improvementAreas")}` : "",
+        movingForward && publicField(invite, "importantDates")
+          ? `IMPORTANT DATES\n${publicField(invite, "importantDates")}` : "",
+        movingForward && publicField(invite, "nextSteps")
+          ? `NEXT STEPS\n${publicField(invite, "nextSteps")}` : "",
+        responseDeadline ? `PLEASE RESPOND BY\n${formatDate(responseDeadline)}` : "",
         "",
         "We are proud of your effort and excited about what comes next.",
-        invite.coachName || "Your Coaching Team"
+        movingForward ? publicField(invite, "coachName") || "Your Coaching Team" : "Your Coaching Team"
       ];
       return lines.filter((line, index, all) => {
         if (line !== "") return true;
@@ -1904,6 +2104,7 @@
       const remaining = invitesForProgram(activeProgram)
         .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
       activeInviteId = remaining[0]?.id || null;
+      hideMode = false;
       saveState("Invitation deleted.");
       render();
     }
@@ -1971,6 +2172,7 @@
         activeInviteId = invitesForProgram("NGA")[0]?.id || null;
         searchTerm = "";
         selectedStatus = "All";
+        hideMode = false;
         elements.searchInput.value = "";
         renderStatusOptions();
         saveState("Backup imported.");
@@ -1993,6 +2195,7 @@
       activeInviteId = null;
       searchTerm = "";
       selectedStatus = "All";
+      hideMode = false;
       elements.searchInput.value = "";
       renderStatusOptions();
       saveState("App reset.");
@@ -2002,6 +2205,7 @@
     elements.tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
         activeProgram = tab.dataset.program;
+        hideMode = false;
         const active = getActiveInvite();
         if (!active || active.program !== activeProgram) {
           activeInviteId = invitesForProgram(activeProgram)
@@ -2017,6 +2221,7 @@
       activeInviteId = invite.id;
       selectedStatus = "All";
       searchTerm = "";
+      hideMode = false;
       elements.searchInput.value = "";
       renderStatusOptions();
       saveState("New invitation created.");
@@ -2030,6 +2235,7 @@
       const card = event.target.closest("[data-invite-id]");
       if (!card) return;
       activeInviteId = card.dataset.inviteId;
+      hideMode = false;
       render();
     });
 

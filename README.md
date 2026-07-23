@@ -4,7 +4,7 @@ A private, browser-local web app for creating and tracking NGA and USAG team inv
 
 ## Use
 
-Open the published GitHub Pages app, choose NGA or USAG, and create an invitation. Program Setup stores reusable schedule and cost details for each program. Each athlete can also have an optional private NGA or USAG skill checklist. The app can print an invitation, copy its text, and export or import a JSON backup.
+Open the published GitHub Pages app, choose NGA or USAG, and create an invitation. Program Setup stores reusable schedule and cost details for each program. Each athlete can also have an optional private NGA or USAG skill checklist. Moving Forward fields appear when an invitation is Invited or Accepted. Hide Fields lets a coach remove unneeded fields from one athlete's editor and finished invitation without deleting the saved values. The app can print an invitation, copy its text, and export or import a JSON backup.
 
 ## Privacy
 
