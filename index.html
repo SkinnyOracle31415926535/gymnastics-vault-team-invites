@@ -1343,7 +1343,7 @@
       ]
     };
     const INVITE_TEXT_FIELDS = [
-      "athleteName", "guardianName", "level", "invitationDate", "status",
+      "athleteName", "guardianName", "birthday", "level", "invitationDate", "status",
       "strengths", "coachMessage", "improvementAreas", "practiceSchedule",
       "startDate", "monthlyTuition", "uniformCost", "assessmentFee",
       "importantDates", "responseDeadline", "nextSteps", "coachName", "privateNotes"
@@ -1550,6 +1550,7 @@
         updatedAt: now,
         athleteName: "",
         guardianName: "",
+        birthday: "",
         level: template.level,
         invitationDate: "",
         status: "Draft",
@@ -1773,6 +1774,7 @@
       const invitationFields = [
         editorInputField(invite, "Athlete name", "athleteName", "The gymnast receiving the invitation"),
         editorInputField(invite, "Parent or guardian", "guardianName", "Optional"),
+        editorInputField(invite, "Birthday", "birthday", "", "date"),
         editorInputField(invite, "Level or placement", "level", "Example: Level 3"),
         editorInputField(invite, "Invitation date", "invitationDate", "", "date"),
         editorSelectField(invite, "Status", "status", STATUSES),
