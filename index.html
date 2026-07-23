@@ -477,6 +477,104 @@
       font-weight: 400;
     }
 
+    .skill-checklist {
+      display: grid;
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid rgba(113, 216, 94, 0.34);
+      border-radius: 12px;
+      background: #090e09;
+    }
+
+    .checklist-toggle,
+    .skill-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .checklist-toggle {
+      gap: 10px;
+      color: var(--green);
+    }
+
+    .checklist-toggle input,
+    .skill-item input {
+      width: 20px;
+      min-height: 20px;
+      margin: 1px 0 0;
+      accent-color: var(--yellow);
+    }
+
+    .checklist-toggle strong,
+    .checklist-toggle small {
+      display: block;
+    }
+
+    .checklist-toggle small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 400;
+    }
+
+    .skill-checklist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 3px;
+      border-top: 1px solid rgba(113, 216, 94, 0.24);
+    }
+
+    .skill-checklist-header strong {
+      color: var(--yellow);
+    }
+
+    .skill-checklist-header span {
+      color: var(--green);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .skill-groups {
+      display: grid;
+      gap: 10px;
+    }
+
+    .skill-group {
+      padding: 11px;
+      border: 1px solid rgba(113, 216, 94, 0.23);
+      border-radius: 10px;
+      background: #0e170e;
+    }
+
+    .skill-group h4 {
+      margin: 0 0 9px;
+      color: var(--green);
+      font-size: 0.95rem;
+    }
+
+    .skill-items {
+      display: grid;
+      gap: 7px;
+    }
+
+    .skill-item {
+      gap: 8px;
+      color: var(--white);
+      font-size: 0.86rem;
+      font-weight: 400;
+      line-height: 1.35;
+    }
+
+    .skill-item.complete span {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--green-bright);
+    }
+
     .editor-footer {
       display: flex;
       justify-content: flex-end;
@@ -963,6 +1061,179 @@
     const DATA_VERSION = 1;
     const PROGRAMS = ["NGA", "USAG"];
     const STATUSES = ["Draft", "Ready", "Invited", "Accepted", "Declined", "Hold"];
+    const SKILL_CHECKLISTS = {
+      NGA: [
+        {
+          category: "Floor / Basics",
+          skills: [
+            "Forward roll to stand",
+            "Candlestick roll to stand",
+            "Backward roll to stand",
+            "Arabesque (3 second hold)",
+            "Cartwheel",
+            "Round-off",
+            "Handstand momentary hold",
+            "Handstand hold (3+ seconds)"
+          ]
+        },
+        {
+          category: "Mushroom / Circles",
+          skills: [
+            "1/4 circle",
+            "1/2 circle",
+            "3/4 circle",
+            "1 circle",
+            "1 1/2 circles",
+            "2 or more circles"
+          ]
+        },
+        {
+          category: "Strap Bar / Rings Basics",
+          skills: [
+            "Hanging tuck hold (3 seconds)",
+            "Hanging L hold",
+            "Swings",
+            "Inverted hang (3 seconds)",
+            "German stick"
+          ]
+        },
+        {
+          category: "Vault",
+          skills: [
+            "Straight jump onto resi",
+            "Handstand flatback on floor",
+            "Handstand flatback with spot on resi",
+            "Handstand flatback without spot on resi"
+          ]
+        },
+        {
+          category: "Parallel Bars",
+          skills: [
+            "Mini support swings",
+            "Support swings",
+            "Upper arm swings",
+            "Flank dismount",
+            "Front uprise",
+            "Swing handstand dismount"
+          ]
+        },
+        {
+          category: "High Bar",
+          skills: [
+            "Pullover",
+            "Cast to horizontal",
+            "Undershoot",
+            "Backhip circle",
+            "Kip",
+            "Flyaway"
+          ]
+        }
+      ],
+      USAG: [
+        {
+          category: "Physical Prep / Safety Gate",
+          skills: [
+            "Follows warm-up instructions without wandering",
+            "Hollow hold (10 seconds)",
+            "Arch hold (10 seconds)",
+            "Tuck hang from bar (5 seconds)",
+            "Straddle sit — chest to floor",
+            "Pike sit — chest to legs",
+            "Bridge with straight arms / shoulders over hands",
+            "Fall safely — chin tucked on back fall"
+          ]
+        },
+        {
+          category: "Floor Basics",
+          skills: [
+            "Straight jump — stick landing",
+            "Tuck jump — stick landing",
+            "Straddle jump",
+            "Forward roll to stand",
+            "Backward roll to stand",
+            "Candlestick roll to stand",
+            "Cartwheel — both sides",
+            "Round-off",
+            "Bridge kickover (spot okay)",
+            "Handstand — momentary",
+            "Handstand — 3+ second hold",
+            "Handstand forward roll"
+          ]
+        },
+        {
+          category: "Vault",
+          skills: [
+            "Hurdle onto board — two-foot punch"
+          ]
+        },
+        {
+          category: "Tumble Track / Trampoline",
+          skills: [
+            "Stays in center — 5 controlled bounces",
+            "Straight jump stop",
+            "Tuck jump",
+            "Seat drop → stand"
+          ]
+        },
+        {
+          category: "Still Rings",
+          skills: [
+            "Safe hang — shoulders active, no swing",
+            "Tuck hang (3 seconds)",
+            "Hanging L hold (3 seconds)",
+            "Inverted hang / skin the cat (spot)",
+            "Controlled swings (no wild kicking)",
+            "German stick"
+          ]
+        },
+        {
+          category: "Parallel Bars",
+          skills: [
+            "Safe support mount / safe dismount",
+            "Support hold (5 seconds)",
+            "Straddle travel",
+            "Support swings — controlled",
+            "Upper arm swings",
+            "Flank dismount"
+          ]
+        },
+        {
+          category: "High Bar",
+          skills: [
+            "Safe grip, safe drop-off from bar",
+            "Chin-up hold (5 seconds)",
+            "Pullover (spot okay)",
+            "Cast to horizontal",
+            "Backhip circle",
+            "Undershoot to stick landing"
+          ]
+        },
+        {
+          category: "Mushroom",
+          skills: [
+            "Safe mount and dismount on mushroom",
+            "Support hold (5 seconds)",
+            "1/4 circle",
+            "1/2 circle",
+            "3/4 circle",
+            "1 full circle",
+            "1 1/4 circles",
+            "1 1/2 circles",
+            "2 or more circles"
+          ]
+        },
+        {
+          category: "Strength",
+          skills: [
+            "5 strict push-ups (chest to floor)",
+            "3 pull-ups (chin over bar)",
+            "10 v-ups",
+            "30-second hollow rocks",
+            "Rope climb (with or without legs)"
+          ]
+        }
+      ]
+    };
     const INVITE_TEXT_FIELDS = [
       "athleteName", "guardianName", "level", "invitationDate", "status",
       "strengths", "coachMessage", "improvementAreas", "practiceSchedule",
@@ -1050,6 +1321,33 @@
       return normalized;
     }
 
+    function defaultSkillChecklist(program) {
+      return SKILL_CHECKLISTS[program].flatMap((group, groupIndex) =>
+        group.skills.map((label, skillIndex) => ({
+          id: `${program.toLowerCase()}-${groupIndex + 1}-${skillIndex + 1}`,
+          category: group.category,
+          label,
+          complete: false
+        }))
+      );
+    }
+
+    function normalizeSkillChecklist(value, program) {
+      const savedCompletions = new Map();
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          if (!item || typeof item !== "object") return;
+          const id = safeText(item.id, 80);
+          if (id) savedCompletions.set(id, item.complete === true);
+        });
+      }
+
+      return defaultSkillChecklist(program).map((item) => ({
+        ...item,
+        complete: savedCompletions.get(item.id) === true
+      }));
+    }
+
     function normalizeInvite(value) {
       if (!value || typeof value !== "object") return null;
       if (!PROGRAMS.includes(value.program)) return null;
@@ -1058,7 +1356,9 @@
         id: safeText(value.id, 160) || createId(),
         program: value.program,
         createdAt: safeText(value.createdAt, 80) || new Date().toISOString(),
-        updatedAt: safeText(value.updatedAt, 80) || new Date().toISOString()
+        updatedAt: safeText(value.updatedAt, 80) || new Date().toISOString(),
+        checklistEnabled: value.checklistEnabled === true,
+        skillChecklist: normalizeSkillChecklist(value.skillChecklist, value.program)
       };
 
       INVITE_TEXT_FIELDS.forEach((field) => {
@@ -1152,7 +1452,9 @@
         responseDeadline: template.responseDeadline,
         nextSteps: template.nextSteps,
         coachName: template.coachName,
-        privateNotes: ""
+        privateNotes: "",
+        checklistEnabled: false,
+        skillChecklist: defaultSkillChecklist(program)
       };
     }
 
@@ -1324,6 +1626,16 @@
             <legend class="section-title">Private Tracking</legend>
             <div class="form-grid">
               ${textareaField("Private notes", "privateNotes", "Only visible inside this app. Never included in the invitation.", true)}
+              <div class="skill-checklist field-full">
+                <label class="checklist-toggle">
+                  <input id="skillChecklistEnabled" type="checkbox" ${invite.checklistEnabled ? "checked" : ""}>
+                  <span>
+                    <strong>Use skill checklist for this athlete</strong>
+                    <small>Private coach tracking. Never included in the printed or copied invitation.</small>
+                  </span>
+                </label>
+                ${invite.checklistEnabled ? renderSkillChecklist(invite) : ""}
+              </div>
             </div>
           </fieldset>
 
@@ -1336,6 +1648,10 @@
         control.value = invite[control.dataset.field] || "";
         control.addEventListener("input", handleInviteFieldInput);
         control.addEventListener("change", handleInviteFieldInput);
+      });
+      document.getElementById("skillChecklistEnabled").addEventListener("change", handleChecklistToggle);
+      elements.editorBody.querySelectorAll("[data-skill-id]").forEach((control) => {
+        control.addEventListener("change", handleSkillChecklistInput);
       });
       document.getElementById("deleteInviteButton").addEventListener("click", deleteActiveInvite);
     }
@@ -1366,6 +1682,43 @@
         </label>`;
     }
 
+    function checklistProgress(invite) {
+      const total = invite.skillChecklist.length;
+      const completed = invite.skillChecklist.filter((item) => item.complete).length;
+      return { completed, total };
+    }
+
+    function renderSkillChecklist(invite) {
+      const progress = checklistProgress(invite);
+      const groups = SKILL_CHECKLISTS[invite.program].map((group) => ({
+        category: group.category,
+        items: invite.skillChecklist.filter((item) => item.category === group.category)
+      }));
+
+      return `
+        <div class="skill-checklist-header">
+          <strong>${escapeHtml(invite.program)} tryout skills</strong>
+          <span id="skillChecklistProgress">${progress.completed} / ${progress.total} complete</span>
+        </div>
+        <div class="skill-groups">
+          ${groups.map((group) => `
+            <section class="skill-group">
+              <h4>${escapeHtml(group.category)}</h4>
+              <div class="skill-items">
+                ${group.items.map((item) => `
+                  <label class="skill-item ${item.complete ? "complete" : ""}">
+                    <input type="checkbox"
+                           data-skill-id="${escapeHtml(item.id)}"
+                           ${item.complete ? "checked" : ""}>
+                    <span>${escapeHtml(item.label)}</span>
+                  </label>
+                `).join("")}
+              </div>
+            </section>
+          `).join("")}
+        </div>`;
+    }
+
     function handleInviteFieldInput(event) {
       const invite = getActiveInvite();
       if (!invite) return;
@@ -1378,6 +1731,31 @@
       renderStats();
       renderRecords();
       renderPreview();
+    }
+
+    function handleChecklistToggle(event) {
+      const invite = getActiveInvite();
+      if (!invite) return;
+      invite.checklistEnabled = event.currentTarget.checked;
+      invite.updatedAt = new Date().toISOString();
+      saveState();
+      renderRecords();
+      renderEditor();
+    }
+
+    function handleSkillChecklistInput(event) {
+      const invite = getActiveInvite();
+      if (!invite || !invite.checklistEnabled) return;
+      const item = invite.skillChecklist.find((skill) => skill.id === event.currentTarget.dataset.skillId);
+      if (!item) return;
+      item.complete = event.currentTarget.checked;
+      invite.updatedAt = new Date().toISOString();
+      saveState();
+      event.currentTarget.closest(".skill-item")?.classList.toggle("complete", item.complete);
+      const progress = checklistProgress(invite);
+      const progressLabel = document.getElementById("skillChecklistProgress");
+      if (progressLabel) progressLabel.textContent = `${progress.completed} / ${progress.total} complete`;
+      renderRecords();
     }
 
     function displayName(invite) {
@@ -1412,7 +1790,7 @@
         elements.previewBody.innerHTML = `
           <div class="preview-placeholder">
             <strong>Your finished invitation appears here</strong>
-            <span>Private notes and tracking status are never printed or copied.</span>
+            <span>Private notes, skill checklists, and tracking status are never printed or copied.</span>
           </div>`;
         return;
       }
