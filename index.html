@@ -1,0 +1,1687 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050805">
+  <meta name="description" content="Create and track private NGA and USAG team invitations.">
+  <title>Team Invitations</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <style>
+    @font-face {
+      font-family: "STIX Two Text";
+      src: url("assets/fonts/stix-two-text-400-italic.woff2") format("woff2");
+      font-style: italic;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "STIX Two Text";
+      src: url("assets/fonts/stix-two-text-700-italic.woff2") format("woff2");
+      font-style: italic;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: dark;
+      --black: #050805;
+      --panel: #0d140d;
+      --panel-raised: #121d12;
+      --panel-soft: #172417;
+      --green: #ace9a5;
+      --green-bright: #71d85e;
+      --green-outline: #28c926;
+      --green-deep: #345e2b;
+      --yellow: #fff000;
+      --white: #f7f9f3;
+      --muted: #b8c7b5;
+      --danger: #ff7b73;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+      --radius: 18px;
+      --font: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--black);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 8% -10%, rgba(113, 216, 94, 0.16), transparent 30rem),
+        radial-gradient(circle at 100% 5%, rgba(255, 240, 0, 0.08), transparent 26rem),
+        var(--black);
+      color: var(--white);
+      font-family: var(--font);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      font-style: italic;
+    }
+
+    button {
+      border: 0;
+    }
+
+    button,
+    select,
+    input[type="date"] {
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 2px;
+    }
+
+    .app-shell {
+      width: min(1680px, 100%);
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .app-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 20px 22px;
+      border: 1px solid rgba(40, 201, 38, 0.48);
+      border-radius: var(--radius);
+      background: rgba(13, 20, 13, 0.93);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-kicker,
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--yellow);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 2px;
+      color: var(--green);
+      font-size: clamp(2rem, 4vw, 3.45rem);
+      line-height: 0.95;
+    }
+
+    .brand-divider {
+      margin: 6px 0 0;
+      color: var(--green-bright);
+      font-size: 0.96rem;
+      letter-spacing: 0.1em;
+    }
+
+    .privacy-note {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .header-actions,
+    .panel-actions,
+    .preview-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .button {
+      min-height: 42px;
+      padding: 9px 15px;
+      border: 1px solid var(--green-outline);
+      border-radius: 11px;
+      background: var(--panel-soft);
+      color: var(--green);
+      font-weight: 700;
+      transition: transform 140ms ease, background 140ms ease, color 140ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      background: var(--green-deep);
+      color: var(--white);
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      transform: none;
+    }
+
+    .button-primary {
+      background: var(--green-bright);
+      color: #071007;
+    }
+
+    .button-yellow {
+      border-color: var(--yellow);
+      background: var(--yellow);
+      color: #111;
+    }
+
+    .button-danger {
+      border-color: rgba(255, 123, 115, 0.65);
+      color: #ffc2bd;
+    }
+
+    .program-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0 12px;
+    }
+
+    .program-tab {
+      position: relative;
+      min-height: 70px;
+      padding: 12px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(40, 201, 38, 0.55);
+      border-radius: 15px;
+      background: var(--panel);
+      color: var(--muted);
+      text-align: left;
+      transition: border 140ms ease, background 140ms ease, color 140ms ease;
+    }
+
+    .program-tab strong {
+      display: block;
+      color: inherit;
+      font-size: 1.45rem;
+    }
+
+    .program-tab span {
+      font-size: 0.88rem;
+    }
+
+    .program-tab[aria-selected="true"] {
+      border-color: var(--yellow);
+      background: var(--green);
+      color: #111;
+      box-shadow: inset 0 -5px 0 var(--yellow);
+    }
+
+    .program-tab[aria-selected="true"]::after {
+      content: "✧";
+      position: absolute;
+      top: 6px;
+      right: 14px;
+      color: #111;
+      font-size: 1.6rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      padding: 11px 15px;
+      border-left: 4px solid var(--green-outline);
+      border-radius: 11px;
+      background: rgba(23, 36, 23, 0.88);
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--yellow);
+      font-size: 1.32rem;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(250px, 0.72fr) minmax(390px, 1.08fr) minmax(430px, 1.35fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid rgba(40, 201, 38, 0.42);
+      border-radius: var(--radius);
+      background: rgba(13, 20, 13, 0.94);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 17px 12px;
+      border-bottom: 1px solid rgba(40, 201, 38, 0.26);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      color: var(--green);
+      font-size: 1.25rem;
+    }
+
+    .sidebar-body {
+      padding: 13px;
+    }
+
+    .search-row {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 43px;
+      padding: 9px 11px;
+      border: 1px solid rgba(113, 216, 94, 0.45);
+      border-radius: 10px;
+      background: #090e09;
+      color: var(--white);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #7f917d;
+      opacity: 1;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      cursor: text;
+    }
+
+    .records-list {
+      display: grid;
+      gap: 8px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .record-card {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(113, 216, 94, 0.28);
+      border-radius: 12px;
+      background: #0b110b;
+      color: var(--white);
+      text-align: left;
+    }
+
+    .record-card:hover {
+      border-color: var(--green-bright);
+      background: var(--panel-soft);
+    }
+
+    .record-card.active {
+      border-color: var(--yellow);
+      background: rgba(52, 94, 43, 0.48);
+      box-shadow: inset 4px 0 0 var(--yellow);
+    }
+
+    .record-title {
+      display: block;
+      margin-bottom: 5px;
+      overflow: hidden;
+      color: var(--green);
+      font-size: 1.08rem;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .record-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border: 1px solid var(--green-outline);
+      border-radius: 999px;
+      background: var(--panel-soft);
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .status-accepted {
+      background: var(--green-bright);
+      color: #071007;
+    }
+
+    .status-declined {
+      border-color: var(--danger);
+      color: #ffc2bd;
+    }
+
+    .status-hold {
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .empty-list,
+    .empty-editor,
+    .preview-placeholder {
+      padding: 26px 17px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-list strong,
+    .empty-editor strong,
+    .preview-placeholder strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--green);
+      font-size: 1.15rem;
+    }
+
+    .editor-body {
+      padding: 15px 17px 20px;
+    }
+
+    .editor-section {
+      margin: 0 0 18px;
+      padding: 0;
+      border: 0;
+    }
+
+    .editor-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      color: var(--yellow);
+      font-size: 1.03rem;
+      font-weight: 700;
+    }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 240, 0, 0.34);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--green);
+      font-size: 0.91rem;
+      font-weight: 700;
+    }
+
+    .field-hint {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 400;
+    }
+
+    .editor-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 2px;
+    }
+
+    .preview-panel {
+      position: sticky;
+      top: 12px;
+      overflow: hidden;
+    }
+
+    .preview-body {
+      padding: 14px;
+    }
+
+    .invite-document {
+      overflow: hidden;
+      border: 2px solid var(--green-outline);
+      border-radius: 16px;
+      background: #080c08;
+      color: var(--white);
+      box-shadow: 0 16px 46px rgba(0, 0, 0, 0.36);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .invite-hero {
+      min-height: 260px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 34px 30px;
+      border-bottom: 7px solid var(--yellow);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+        var(--green);
+      background-size: 26px 26px;
+      color: #071007;
+      text-align: center;
+    }
+
+    .invite-mark {
+      margin-bottom: 8px;
+      color: #163a15;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .invite-hero h3 {
+      max-width: 100%;
+      margin: 5px 0 8px;
+      overflow-wrap: anywhere;
+      color: #050805;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 0.92;
+    }
+
+    .invite-program {
+      display: inline-flex;
+      padding: 7px 14px;
+      border: 2px solid #050805;
+      border-radius: 999px;
+      background: var(--yellow);
+      color: #050805;
+      font-weight: 700;
+    }
+
+    .invite-ornament {
+      margin: 13px 0 0;
+      color: #163a15;
+      font-size: 1.1rem;
+      letter-spacing: 0.13em;
+    }
+
+    .invite-details {
+      padding: 25px 27px 30px;
+    }
+
+    .invite-intro {
+      margin-bottom: 20px;
+      color: #e9f5e6;
+      font-size: 1.04rem;
+      line-height: 1.55;
+    }
+
+    .invite-section {
+      margin: 0 0 20px;
+      padding: 15px 16px;
+      border-left: 4px solid var(--green-outline);
+      border-radius: 0 11px 11px 0;
+      background: #111a11;
+      break-inside: avoid;
+    }
+
+    .invite-section h4 {
+      margin: 0 0 7px;
+      color: var(--yellow);
+      font-size: 1.05rem;
+    }
+
+    .invite-section p {
+      margin: 0;
+      color: #e4efe1;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .detail-tile {
+      min-height: 76px;
+      padding: 11px 12px;
+      border: 1px solid rgba(113, 216, 94, 0.42);
+      border-radius: 10px;
+      background: var(--panel-soft);
+      break-inside: avoid;
+    }
+
+    .detail-tile span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .detail-tile strong {
+      color: var(--white);
+      overflow-wrap: anywhere;
+    }
+
+    .invite-closing {
+      margin-top: 23px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(113, 216, 94, 0.42);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .invite-signature {
+      display: block;
+      margin-top: 10px;
+      color: var(--green);
+      font-size: 1.28rem;
+      font-weight: 700;
+    }
+
+    dialog {
+      width: min(720px, calc(100% - 24px));
+      max-height: min(88vh, 900px);
+      padding: 0;
+      overflow: auto;
+      border: 1px solid var(--green-outline);
+      border-radius: 18px;
+      background: var(--panel);
+      color: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(5px);
+    }
+
+    .dialog-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(40, 201, 38, 0.35);
+      background: var(--panel);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      color: var(--green);
+    }
+
+    .dialog-body {
+      padding: 18px;
+    }
+
+    .dialog-note {
+      margin-bottom: 16px;
+      color: var(--muted);
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 20;
+      max-width: min(390px, calc(100% - 40px));
+      padding: 12px 16px;
+      border: 1px solid var(--green-outline);
+      border-radius: 12px;
+      background: var(--green);
+      color: #071007;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    @media (max-width: 1260px) {
+      .workspace {
+        grid-template-columns: minmax(250px, 0.75fr) minmax(430px, 1.25fr);
+      }
+
+      .preview-panel {
+        position: static;
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .app-shell {
+        padding: 12px;
+      }
+
+      .app-header {
+        display: grid;
+        padding: 17px;
+      }
+
+      .header-actions .button {
+        flex: 1 1 125px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-panel {
+        grid-column: auto;
+      }
+
+      .records-list {
+        max-height: 310px;
+      }
+
+      .form-grid,
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-full {
+        grid-column: auto;
+      }
+
+      .invite-hero {
+        min-height: 220px;
+        padding: 28px 18px;
+      }
+
+      .invite-details {
+        padding: 20px 17px 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .program-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .panel-actions,
+      .preview-actions {
+        width: 100%;
+      }
+
+      .panel-actions .button,
+      .preview-actions .button {
+        flex: 1 1 120px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.3in;
+      }
+
+      html,
+      body {
+        background: #080c08 !important;
+      }
+
+      body * {
+        visibility: hidden !important;
+      }
+
+      #previewPanel,
+      #previewPanel * {
+        visibility: visible !important;
+      }
+
+      #previewPanel {
+        position: absolute !important;
+        inset: 0 auto auto 0 !important;
+        width: 100% !important;
+        border: 0 !important;
+        background: #080c08 !important;
+        box-shadow: none !important;
+      }
+
+      #previewPanel .panel-header,
+      #previewPanel .preview-placeholder {
+        display: none !important;
+      }
+
+      #previewPanel .preview-body {
+        padding: 0 !important;
+      }
+
+      .invite-document {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+
+      .invite-hero {
+        min-height: 3.35in;
+      }
+
+      .invite-details {
+        padding: 0.28in;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="brand-kicker">California Sports Center</p>
+        <h1>Team Invitations</h1>
+        <p class="brand-divider" aria-hidden="true">✧༺♥༻∞✧༺♥༻∞✧</p>
+        <p class="privacy-note">Saved privately in this browser. Nothing is uploaded.</p>
+      </div>
+      <div class="header-actions" aria-label="Data actions">
+        <button class="button" id="exportButton" type="button">Export Backup</button>
+        <button class="button" id="importButton" type="button">Import Backup</button>
+        <button class="button button-danger" id="resetButton" type="button">Reset App</button>
+        <input class="visually-hidden" id="importFile" type="file" accept="application/json,.json">
+      </div>
+    </header>
+
+    <div class="program-bar" role="tablist" aria-label="Team program">
+      <button class="program-tab" id="ngaTab" type="button" role="tab" data-program="NGA">
+        <strong>NGA</strong>
+        <span id="ngaTabCount">0 invitations</span>
+      </button>
+      <button class="program-tab" id="usagTab" type="button" role="tab" data-program="USAG">
+        <strong>USAG</strong>
+        <span id="usagTabCount">0 invitations</span>
+      </button>
+    </div>
+
+    <section class="stats-row" aria-label="Program summary">
+      <div class="stat-card">
+        <strong id="totalCount">0</strong>
+        <span>Total invitations</span>
+      </div>
+      <div class="stat-card">
+        <strong id="awaitingCount">0</strong>
+        <span>Awaiting response</span>
+      </div>
+      <div class="stat-card">
+        <strong id="acceptedCount">0</strong>
+        <span>Accepted</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel" aria-labelledby="recordsHeading">
+        <div class="panel-header">
+          <h2 id="recordsHeading">Invitations</h2>
+          <button class="button button-primary" id="newInviteButton" type="button">New Invite</button>
+        </div>
+        <div class="sidebar-body">
+          <div class="search-row">
+            <label>
+              Search athletes
+              <input id="searchInput" type="search" placeholder="Type a name">
+            </label>
+            <label>
+              Filter by status
+              <select id="statusFilter"></select>
+            </label>
+          </div>
+          <div class="records-list" id="recordsList"></div>
+        </div>
+      </aside>
+
+      <section class="panel" aria-labelledby="editorHeading">
+        <div class="panel-header">
+          <h2 id="editorHeading">Invitation Details</h2>
+          <div class="panel-actions">
+            <button class="button" id="templateButton" type="button">Program Setup</button>
+          </div>
+        </div>
+        <div id="editorBody"></div>
+      </section>
+
+      <section class="panel preview-panel" id="previewPanel" aria-labelledby="previewHeading">
+        <div class="panel-header">
+          <h2 id="previewHeading">Invitation Preview</h2>
+          <div class="preview-actions">
+            <button class="button" id="copyButton" type="button">Copy Text</button>
+            <button class="button button-yellow" id="printButton" type="button">Print / Save PDF</button>
+          </div>
+        </div>
+        <div class="preview-body" id="previewBody"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="templateDialog" aria-labelledby="templateHeading">
+    <div class="dialog-header">
+      <h2 id="templateHeading">NGA Program Setup</h2>
+      <button class="button" id="closeTemplateButton" type="button">Close</button>
+    </div>
+    <div class="dialog-body">
+      <p class="dialog-note">These details are copied into new invitations. Existing invitations will not change.</p>
+      <div class="form-grid" id="templateFields"></div>
+      <div class="dialog-footer">
+        <button class="button button-primary" id="doneTemplateButton" type="button">Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "team-invites-v1";
+    const DATA_VERSION = 1;
+    const PROGRAMS = ["NGA", "USAG"];
+    const STATUSES = ["Draft", "Ready", "Invited", "Accepted", "Declined", "Hold"];
+    const INVITE_TEXT_FIELDS = [
+      "athleteName", "guardianName", "level", "invitationDate", "status",
+      "strengths", "coachMessage", "improvementAreas", "practiceSchedule",
+      "startDate", "monthlyTuition", "uniformCost", "assessmentFee",
+      "importantDates", "responseDeadline", "nextSteps", "coachName", "privateNotes"
+    ];
+    const TEMPLATE_TEXT_FIELDS = [
+      "level", "practiceSchedule", "startDate", "monthlyTuition",
+      "uniformCost", "assessmentFee", "importantDates", "responseDeadline",
+      "nextSteps", "coachName"
+    ];
+
+    const elements = {
+      tabs: Array.from(document.querySelectorAll(".program-tab")),
+      ngaTabCount: document.getElementById("ngaTabCount"),
+      usagTabCount: document.getElementById("usagTabCount"),
+      totalCount: document.getElementById("totalCount"),
+      awaitingCount: document.getElementById("awaitingCount"),
+      acceptedCount: document.getElementById("acceptedCount"),
+      recordsList: document.getElementById("recordsList"),
+      searchInput: document.getElementById("searchInput"),
+      statusFilter: document.getElementById("statusFilter"),
+      newInviteButton: document.getElementById("newInviteButton"),
+      editorBody: document.getElementById("editorBody"),
+      templateButton: document.getElementById("templateButton"),
+      previewBody: document.getElementById("previewBody"),
+      copyButton: document.getElementById("copyButton"),
+      printButton: document.getElementById("printButton"),
+      exportButton: document.getElementById("exportButton"),
+      importButton: document.getElementById("importButton"),
+      importFile: document.getElementById("importFile"),
+      resetButton: document.getElementById("resetButton"),
+      templateDialog: document.getElementById("templateDialog"),
+      templateHeading: document.getElementById("templateHeading"),
+      templateFields: document.getElementById("templateFields"),
+      closeTemplateButton: document.getElementById("closeTemplateButton"),
+      doneTemplateButton: document.getElementById("doneTemplateButton"),
+      toast: document.getElementById("toast")
+    };
+
+    let activeProgram = "NGA";
+    let activeInviteId = null;
+    let searchTerm = "";
+    let selectedStatus = "All";
+    let toastTimer = null;
+    let state = loadState();
+
+    function blankTemplate(program) {
+      return {
+        program,
+        level: "",
+        practiceSchedule: "",
+        startDate: "",
+        monthlyTuition: "",
+        uniformCost: "",
+        assessmentFee: "",
+        importantDates: "",
+        responseDeadline: "",
+        nextSteps: "",
+        coachName: ""
+      };
+    }
+
+    function blankState() {
+      return {
+        version: DATA_VERSION,
+        templates: {
+          NGA: blankTemplate("NGA"),
+          USAG: blankTemplate("USAG")
+        },
+        invites: []
+      };
+    }
+
+    function safeText(value, maxLength = 20000) {
+      return typeof value === "string" ? value.slice(0, maxLength) : "";
+    }
+
+    function normalizeTemplate(value, program) {
+      const normalized = blankTemplate(program);
+      if (!value || typeof value !== "object") return normalized;
+      TEMPLATE_TEXT_FIELDS.forEach((field) => {
+        normalized[field] = safeText(value[field]);
+      });
+      return normalized;
+    }
+
+    function normalizeInvite(value) {
+      if (!value || typeof value !== "object") return null;
+      if (!PROGRAMS.includes(value.program)) return null;
+
+      const normalized = {
+        id: safeText(value.id, 160) || createId(),
+        program: value.program,
+        createdAt: safeText(value.createdAt, 80) || new Date().toISOString(),
+        updatedAt: safeText(value.updatedAt, 80) || new Date().toISOString()
+      };
+
+      INVITE_TEXT_FIELDS.forEach((field) => {
+        normalized[field] = safeText(value[field]);
+      });
+
+      if (!STATUSES.includes(normalized.status)) normalized.status = "Draft";
+      return normalized;
+    }
+
+    function normalizeState(value) {
+      if (!value || typeof value !== "object" || value.version !== DATA_VERSION) {
+        throw new Error("This backup is not a supported Team Invitations file.");
+      }
+      if (!value.templates || typeof value.templates !== "object" || !Array.isArray(value.invites)) {
+        throw new Error("This backup is missing required invitation data.");
+      }
+
+      const ids = new Set();
+      const invites = value.invites.map(normalizeInvite);
+      if (invites.some((invite) => invite === null)) {
+        throw new Error("This backup contains an invalid program or invitation.");
+      }
+      invites.forEach((invite) => {
+        while (ids.has(invite.id)) invite.id = createId();
+        ids.add(invite.id);
+      });
+
+      return {
+        version: DATA_VERSION,
+        templates: {
+          NGA: normalizeTemplate(value.templates.NGA, "NGA"),
+          USAG: normalizeTemplate(value.templates.USAG, "USAG")
+        },
+        invites
+      };
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return blankState();
+        return normalizeState(JSON.parse(saved));
+      } catch (error) {
+        console.warn("Could not load saved Team Invitations data.", error);
+        return blankState();
+      }
+    }
+
+    function saveState(message = "") {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (message) showToast(message);
+        return true;
+      } catch (error) {
+        console.error("Could not save Team Invitations data.", error);
+        showToast("This browser could not save your changes.");
+        return false;
+      }
+    }
+
+    function createId() {
+      if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+        return globalThis.crypto.randomUUID();
+      }
+      return `invite-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function createInvite(program) {
+      const template = state.templates[program];
+      const now = new Date().toISOString();
+      return {
+        id: createId(),
+        program,
+        createdAt: now,
+        updatedAt: now,
+        athleteName: "",
+        guardianName: "",
+        level: template.level,
+        invitationDate: "",
+        status: "Draft",
+        strengths: "",
+        coachMessage: "",
+        improvementAreas: "",
+        practiceSchedule: template.practiceSchedule,
+        startDate: template.startDate,
+        monthlyTuition: template.monthlyTuition,
+        uniformCost: template.uniformCost,
+        assessmentFee: template.assessmentFee,
+        importantDates: template.importantDates,
+        responseDeadline: template.responseDeadline,
+        nextSteps: template.nextSteps,
+        coachName: template.coachName,
+        privateNotes: ""
+      };
+    }
+
+    function getActiveInvite() {
+      return state.invites.find((invite) => invite.id === activeInviteId) || null;
+    }
+
+    function invitesForProgram(program) {
+      return state.invites.filter((invite) => invite.program === program);
+    }
+
+    function pluralize(count, word) {
+      return `${count} ${word}${count === 1 ? "" : "s"}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const parsed = new Date(`${value}T12:00:00`);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function showToast(message) {
+      window.clearTimeout(toastTimer);
+      elements.toast.textContent = message;
+      elements.toast.classList.add("show");
+      toastTimer = window.setTimeout(() => {
+        elements.toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function render() {
+      renderTabs();
+      renderStats();
+      renderRecords();
+      renderEditor();
+      renderPreview();
+    }
+
+    function renderTabs() {
+      const ngaCount = invitesForProgram("NGA").length;
+      const usagCount = invitesForProgram("USAG").length;
+      elements.ngaTabCount.textContent = pluralize(ngaCount, "invitation");
+      elements.usagTabCount.textContent = pluralize(usagCount, "invitation");
+
+      elements.tabs.forEach((tab) => {
+        const selected = tab.dataset.program === activeProgram;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+    }
+
+    function renderStats() {
+      const invites = invitesForProgram(activeProgram);
+      elements.totalCount.textContent = invites.length;
+      elements.awaitingCount.textContent = invites.filter((invite) => invite.status === "Invited").length;
+      elements.acceptedCount.textContent = invites.filter((invite) => invite.status === "Accepted").length;
+    }
+
+    function renderStatusOptions() {
+      elements.statusFilter.innerHTML = ["All", ...STATUSES]
+        .map((status) => `<option value="${status}">${status}</option>`)
+        .join("");
+      elements.statusFilter.value = selectedStatus;
+    }
+
+    function renderRecords() {
+      const normalizedSearch = searchTerm.trim().toLowerCase();
+      const filtered = invitesForProgram(activeProgram)
+        .filter((invite) => selectedStatus === "All" || invite.status === selectedStatus)
+        .filter((invite) => {
+          if (!normalizedSearch) return true;
+          return `${invite.athleteName} ${invite.guardianName} ${invite.level}`
+            .toLowerCase()
+            .includes(normalizedSearch);
+        })
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+      if (!filtered.length) {
+        const hasProgramInvites = invitesForProgram(activeProgram).length > 0;
+        elements.recordsList.innerHTML = `
+          <div class="empty-list">
+            <strong>${hasProgramInvites ? "No matches" : `No ${activeProgram} invitations yet`}</strong>
+            <span>${hasProgramInvites ? "Try a different search or status." : "Create the first invitation when you are ready."}</span>
+          </div>`;
+        return;
+      }
+
+      elements.recordsList.innerHTML = filtered.map((invite) => {
+        const title = invite.athleteName || "Untitled invitation";
+        const subtitle = invite.level || `${invite.program} team`;
+        const statusClass = `status-${invite.status.toLowerCase()}`;
+        return `
+          <button class="record-card ${invite.id === activeInviteId ? "active" : ""}"
+                  type="button"
+                  data-invite-id="${escapeHtml(invite.id)}"
+                  aria-pressed="${invite.id === activeInviteId}">
+            <span class="record-title">${escapeHtml(title)}</span>
+            <span class="record-meta">
+              <span>${escapeHtml(subtitle)}</span>
+              <span class="status-badge ${statusClass}">${escapeHtml(invite.status)}</span>
+            </span>
+          </button>`;
+      }).join("");
+    }
+
+    function renderEditor() {
+      const invite = getActiveInvite();
+      if (!invite || invite.program !== activeProgram) {
+        elements.editorBody.innerHTML = `
+          <div class="empty-editor">
+            <strong>Select or create an invitation</strong>
+            <span>Use Program Setup to save reusable ${activeProgram} schedule and cost details.</span>
+          </div>`;
+        return;
+      }
+
+      elements.editorBody.innerHTML = `
+        <div class="editor-body">
+          <fieldset class="editor-section">
+            <legend class="section-title">Invitation</legend>
+            <div class="form-grid">
+              ${inputField("Athlete name", "athleteName", "The gymnast receiving the invitation")}
+              ${inputField("Parent or guardian", "guardianName", "Optional")}
+              ${inputField("Level or placement", "level", "Example: Level 3")}
+              ${inputField("Invitation date", "invitationDate", "", "date")}
+              ${selectField("Status", "status", STATUSES)}
+              ${inputField("Response deadline", "responseDeadline", "", "date")}
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-section">
+            <legend class="section-title">Why They Were Chosen</legend>
+            <div class="form-grid">
+              ${textareaField("Strengths and reasons", "strengths", "Coachability, work ethic, skills, attitude...", true)}
+              ${textareaField("Coach message", "coachMessage", "A personal welcome or encouraging note...", true)}
+              ${textareaField("What to work on", "improvementAreas", "Form, strength, consistency, confidence...", true)}
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-section">
+            <legend class="section-title">Moving Forward</legend>
+            <div class="form-grid">
+              ${textareaField("Practice schedule", "practiceSchedule", "Days and times")}
+              ${inputField("Start date", "startDate", "Example: First week of June")}
+              ${inputField("Monthly tuition", "monthlyTuition", "Leave blank if not ready")}
+              ${inputField("Uniform cost", "uniformCost", "Leave blank if not ready")}
+              ${inputField("Assessment fee", "assessmentFee", "Leave blank if not ready")}
+              ${textareaField("Important dates", "importantDates", "Camp, pictures, intersquad, meetings...", true)}
+              ${textareaField("Next steps", "nextSteps", "Registration, change form, contact instructions...", true)}
+              ${inputField("Coach signature", "coachName", "Coach name")}
+            </div>
+          </fieldset>
+
+          <fieldset class="editor-section">
+            <legend class="section-title">Private Tracking</legend>
+            <div class="form-grid">
+              ${textareaField("Private notes", "privateNotes", "Only visible inside this app. Never included in the invitation.", true)}
+            </div>
+          </fieldset>
+
+          <div class="editor-footer">
+            <button class="button button-danger" id="deleteInviteButton" type="button">Delete Invitation</button>
+          </div>
+        </div>`;
+
+      elements.editorBody.querySelectorAll("[data-field]").forEach((control) => {
+        control.value = invite[control.dataset.field] || "";
+        control.addEventListener("input", handleInviteFieldInput);
+        control.addEventListener("change", handleInviteFieldInput);
+      });
+      document.getElementById("deleteInviteButton").addEventListener("click", deleteActiveInvite);
+    }
+
+    function inputField(label, field, placeholder = "", type = "text") {
+      return `
+        <label>
+          ${label}
+          <input type="${type}" data-field="${field}" placeholder="${escapeHtml(placeholder)}">
+        </label>`;
+    }
+
+    function textareaField(label, field, placeholder = "", fullWidth = false) {
+      return `
+        <label class="${fullWidth ? "field-full" : ""}">
+          ${label}
+          <textarea data-field="${field}" placeholder="${escapeHtml(placeholder)}"></textarea>
+        </label>`;
+    }
+
+    function selectField(label, field, options) {
+      return `
+        <label>
+          ${label}
+          <select data-field="${field}">
+            ${options.map((option) => `<option value="${option}">${option}</option>`).join("")}
+          </select>
+        </label>`;
+    }
+
+    function handleInviteFieldInput(event) {
+      const invite = getActiveInvite();
+      if (!invite) return;
+      const field = event.currentTarget.dataset.field;
+      if (!INVITE_TEXT_FIELDS.includes(field)) return;
+      invite[field] = safeText(event.currentTarget.value);
+      invite.updatedAt = new Date().toISOString();
+      saveState();
+      renderTabs();
+      renderStats();
+      renderRecords();
+      renderPreview();
+    }
+
+    function displayName(invite) {
+      return invite.athleteName.trim() || "Future Team Member";
+    }
+
+    function previewSection(title, value) {
+      if (!value.trim()) return "";
+      return `
+        <section class="invite-section">
+          <h4>${escapeHtml(title)}</h4>
+          <p>${escapeHtml(value)}</p>
+        </section>`;
+    }
+
+    function detailTile(label, value) {
+      if (!value.trim()) return "";
+      return `
+        <div class="detail-tile">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+        </div>`;
+    }
+
+    function renderPreview() {
+      const invite = getActiveInvite();
+      const hasInvite = invite && invite.program === activeProgram;
+      elements.copyButton.disabled = !hasInvite;
+      elements.printButton.disabled = !hasInvite;
+
+      if (!hasInvite) {
+        elements.previewBody.innerHTML = `
+          <div class="preview-placeholder">
+            <strong>Your finished invitation appears here</strong>
+            <span>Private notes and tracking status are never printed or copied.</span>
+          </div>`;
+        return;
+      }
+
+      const athlete = displayName(invite);
+      const greeting = invite.guardianName.trim()
+        ? `Dear ${invite.guardianName.trim()},`
+        : "Congratulations!";
+      const invitationDate = formatDate(invite.invitationDate);
+      const responseDate = formatDate(invite.responseDeadline);
+      const detailTiles = [
+        detailTile("Placement", invite.level),
+        detailTile("Practice Schedule", invite.practiceSchedule),
+        detailTile("Start Date", invite.startDate),
+        detailTile("Monthly Tuition", invite.monthlyTuition),
+        detailTile("Uniform Cost", invite.uniformCost),
+        detailTile("Assessment Fee", invite.assessmentFee),
+        detailTile("Response By", responseDate)
+      ].join("");
+
+      elements.previewBody.innerHTML = `
+        <article class="invite-document" aria-label="${escapeHtml(invite.program)} team invitation for ${escapeHtml(athlete)}">
+          <header class="invite-hero">
+            <div class="invite-mark">You Are Invited</div>
+            <h3>${escapeHtml(athlete)}</h3>
+            <div class="invite-program">${escapeHtml(invite.program)} Team${invite.level ? ` · ${escapeHtml(invite.level)}` : ""}</div>
+            <p class="invite-ornament" aria-hidden="true">✧༺♥༻∞✧༺♥༻∞✧</p>
+          </header>
+          <div class="invite-details">
+            <p class="eyebrow">${escapeHtml(invitationDate || "Official Team Invitation")}</p>
+            <p class="invite-intro">
+              ${escapeHtml(greeting)}<br>
+              We are excited to invite ${escapeHtml(athlete)} to join the ${escapeHtml(invite.program)} competitive team.
+            </p>
+            ${previewSection("Why You Were Chosen", invite.strengths)}
+            ${previewSection("A Note From Your Coach", invite.coachMessage)}
+            ${detailTiles ? `<div class="details-grid">${detailTiles}</div>` : ""}
+            ${previewSection("What To Work On", invite.improvementAreas)}
+            ${previewSection("Important Dates", invite.importantDates)}
+            ${previewSection("Next Steps", invite.nextSteps)}
+            <div class="invite-closing">
+              We are proud of your effort and excited about what comes next.
+              <span class="invite-signature">${escapeHtml(invite.coachName || "Your Coaching Team")}</span>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function buildCopyText(invite) {
+      const lines = [
+        "TEAM INVITATION",
+        "",
+        `${displayName(invite)} — ${invite.program} Team${invite.level ? ` · ${invite.level}` : ""}`,
+        invite.invitationDate ? formatDate(invite.invitationDate) : "",
+        "",
+        invite.guardianName ? `Dear ${invite.guardianName},` : "Congratulations!",
+        `We are excited to invite ${displayName(invite)} to join the ${invite.program} competitive team.`,
+        "",
+        invite.strengths ? `WHY YOU WERE CHOSEN\n${invite.strengths}` : "",
+        invite.coachMessage ? `A NOTE FROM YOUR COACH\n${invite.coachMessage}` : "",
+        invite.practiceSchedule ? `PRACTICE SCHEDULE\n${invite.practiceSchedule}` : "",
+        invite.startDate ? `START DATE\n${invite.startDate}` : "",
+        invite.monthlyTuition ? `MONTHLY TUITION\n${invite.monthlyTuition}` : "",
+        invite.uniformCost ? `UNIFORM COST\n${invite.uniformCost}` : "",
+        invite.assessmentFee ? `ASSESSMENT FEE\n${invite.assessmentFee}` : "",
+        invite.improvementAreas ? `WHAT TO WORK ON\n${invite.improvementAreas}` : "",
+        invite.importantDates ? `IMPORTANT DATES\n${invite.importantDates}` : "",
+        invite.nextSteps ? `NEXT STEPS\n${invite.nextSteps}` : "",
+        invite.responseDeadline ? `PLEASE RESPOND BY\n${formatDate(invite.responseDeadline)}` : "",
+        "",
+        "We are proud of your effort and excited about what comes next.",
+        invite.coachName || "Your Coaching Team"
+      ];
+      return lines.filter((line, index, all) => {
+        if (line !== "") return true;
+        return index > 0 && all[index - 1] !== "";
+      }).join("\n").trim();
+    }
+
+    async function copyActiveInvite() {
+      const invite = getActiveInvite();
+      if (!invite) return;
+      const text = buildCopyText(invite);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
+      showToast("Invitation text copied.");
+    }
+
+    function printActiveInvite() {
+      if (!getActiveInvite()) return;
+      window.print();
+    }
+
+    function deleteActiveInvite() {
+      const invite = getActiveInvite();
+      if (!invite) return;
+      const name = invite.athleteName.trim() || "this untitled invitation";
+      if (!window.confirm(`Delete the invitation for ${name}? This cannot be undone.`)) return;
+      state.invites = state.invites.filter((item) => item.id !== invite.id);
+      const remaining = invitesForProgram(activeProgram)
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      activeInviteId = remaining[0]?.id || null;
+      saveState("Invitation deleted.");
+      render();
+    }
+
+    function openTemplateDialog() {
+      elements.templateHeading.textContent = `${activeProgram} Program Setup`;
+      const template = state.templates[activeProgram];
+      elements.templateFields.innerHTML = `
+        ${inputField("Default level or placement", "level", "Optional")}
+        ${inputField("Default start date", "startDate", "Example: First week of June")}
+        ${textareaField("Practice schedule", "practiceSchedule", "Days and times", true)}
+        ${inputField("Monthly tuition", "monthlyTuition", "Optional")}
+        ${inputField("Uniform cost", "uniformCost", "Optional")}
+        ${inputField("Assessment fee", "assessmentFee", "Optional")}
+        ${inputField("Response deadline", "responseDeadline", "", "date")}
+        ${inputField("Coach signature", "coachName", "Coach name")}
+        ${textareaField("Important dates", "importantDates", "Camp, pictures, intersquad, meetings...", true)}
+        ${textareaField("Next steps", "nextSteps", "Registration and contact instructions...", true)}
+      `;
+      elements.templateFields.querySelectorAll("[data-field]").forEach((control) => {
+        control.value = template[control.dataset.field] || "";
+        control.addEventListener("input", handleTemplateFieldInput);
+        control.addEventListener("change", handleTemplateFieldInput);
+      });
+      elements.templateDialog.showModal();
+    }
+
+    function handleTemplateFieldInput(event) {
+      const field = event.currentTarget.dataset.field;
+      if (!TEMPLATE_TEXT_FIELDS.includes(field)) return;
+      state.templates[activeProgram][field] = safeText(event.currentTarget.value);
+      saveState();
+    }
+
+    function exportBackup() {
+      const backup = {
+        version: DATA_VERSION,
+        exportedAt: new Date().toISOString(),
+        templates: state.templates,
+        invites: state.invites
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `team-invites-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("Backup exported.");
+    }
+
+    async function importBackup(file) {
+      if (!file) return;
+      try {
+        const imported = normalizeState(JSON.parse(await file.text()));
+        const count = imported.invites.length;
+        const proceed = window.confirm(
+          `Replace the current app data with this backup containing ${pluralize(count, "invitation")}?`
+        );
+        if (!proceed) return;
+        state = imported;
+        activeProgram = "NGA";
+        activeInviteId = invitesForProgram("NGA")[0]?.id || null;
+        searchTerm = "";
+        selectedStatus = "All";
+        elements.searchInput.value = "";
+        renderStatusOptions();
+        saveState("Backup imported.");
+        render();
+      } catch (error) {
+        console.error("Could not import Team Invitations backup.", error);
+        window.alert(error.message || "This file could not be imported.");
+      } finally {
+        elements.importFile.value = "";
+      }
+    }
+
+    function resetApp() {
+      const proceed = window.confirm(
+        "Reset Team Invitations? This permanently clears every saved invitation and both program templates from this browser."
+      );
+      if (!proceed) return;
+      state = blankState();
+      activeProgram = "NGA";
+      activeInviteId = null;
+      searchTerm = "";
+      selectedStatus = "All";
+      elements.searchInput.value = "";
+      renderStatusOptions();
+      saveState("App reset.");
+      render();
+    }
+
+    elements.tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activeProgram = tab.dataset.program;
+        const active = getActiveInvite();
+        if (!active || active.program !== activeProgram) {
+          activeInviteId = invitesForProgram(activeProgram)
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0]?.id || null;
+        }
+        render();
+      });
+    });
+
+    elements.newInviteButton.addEventListener("click", () => {
+      const invite = createInvite(activeProgram);
+      state.invites.push(invite);
+      activeInviteId = invite.id;
+      selectedStatus = "All";
+      searchTerm = "";
+      elements.searchInput.value = "";
+      renderStatusOptions();
+      saveState("New invitation created.");
+      render();
+      requestAnimationFrame(() => {
+        elements.editorBody.querySelector('[data-field="athleteName"]')?.focus();
+      });
+    });
+
+    elements.recordsList.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-invite-id]");
+      if (!card) return;
+      activeInviteId = card.dataset.inviteId;
+      render();
+    });
+
+    elements.searchInput.addEventListener("input", (event) => {
+      searchTerm = event.currentTarget.value;
+      renderRecords();
+    });
+
+    elements.statusFilter.addEventListener("change", (event) => {
+      selectedStatus = event.currentTarget.value;
+      renderRecords();
+    });
+
+    elements.templateButton.addEventListener("click", openTemplateDialog);
+    elements.closeTemplateButton.addEventListener("click", () => elements.templateDialog.close());
+    elements.doneTemplateButton.addEventListener("click", () => {
+      elements.templateDialog.close();
+      showToast(`${activeProgram} program setup saved.`);
+    });
+    elements.copyButton.addEventListener("click", copyActiveInvite);
+    elements.printButton.addEventListener("click", printActiveInvite);
+    elements.exportButton.addEventListener("click", exportBackup);
+    elements.importButton.addEventListener("click", () => elements.importFile.click());
+    elements.importFile.addEventListener("change", (event) => importBackup(event.currentTarget.files[0]));
+    elements.resetButton.addEventListener("click", resetApp);
+
+    renderStatusOptions();
+    activeInviteId = invitesForProgram(activeProgram)
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0]?.id || null;
+    render();
+  </script>
+</body>
+</html>
