@@ -1343,7 +1343,7 @@
       ]
     };
     const INVITE_TEXT_FIELDS = [
-      "athleteName", "guardianName", "birthday", "level", "invitationDate", "status",
+      "athleteName", "guardianName", "birthday", "revisitDate", "level", "invitationDate", "status",
       "strengths", "coachMessage", "improvementAreas", "practiceSchedule",
       "startDate", "monthlyTuition", "uniformCost", "assessmentFee",
       "importantDates", "responseDeadline", "nextSteps", "coachName", "privateNotes"
@@ -1551,6 +1551,7 @@
         athleteName: "",
         guardianName: "",
         birthday: "",
+        revisitDate: "",
         level: template.level,
         invitationDate: "",
         status: "Draft",
@@ -1798,6 +1799,7 @@
           ].join("")
         : "";
       const privateFields = [
+        editorInputField(invite, "Revisit date (too young to test now)", "revisitDate", "", "date"),
         editorTextareaField(invite, "Private notes", "privateNotes", "Only visible inside this app. Never included in the invitation.", true),
         editorSkillChecklistField(invite)
       ].join("");
