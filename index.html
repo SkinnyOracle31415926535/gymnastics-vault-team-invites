@@ -154,7 +154,6 @@
       font-size: 0.95rem;
     }
 
-    .header-actions,
     .panel-actions,
     .preview-actions {
       display: flex;
@@ -914,17 +913,6 @@
       transform: translateY(0);
     }
 
-    .visually-hidden {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    }
-
     @media (max-width: 1260px) {
       .workspace {
         grid-template-columns: minmax(250px, 0.75fr) minmax(430px, 1.25fr);
@@ -944,10 +932,6 @@
       .app-header {
         display: grid;
         padding: 17px;
-      }
-
-      .header-actions .button {
-        flex: 1 1 125px;
       }
 
       .workspace {
@@ -1073,22 +1057,16 @@
         <p class="brand-divider" aria-hidden="true">+---+---+---+</p>
         <p class="privacy-note">Saved privately in this browser. Nothing is uploaded.</p>
       </div>
-      <div class="header-actions" aria-label="Data actions">
-        <button class="button" id="exportButton" type="button">Export Backup</button>
-        <button class="button" id="importButton" type="button">Import Backup</button>
-        <button class="button button-danger" id="resetButton" type="button">Reset App</button>
-        <input class="visually-hidden" id="importFile" type="file" accept="application/json,.json">
-      </div>
     </header>
 
     <div class="program-bar" role="tablist" aria-label="Team program">
-      <button class="program-tab" id="ngaTab" type="button" role="tab" data-program="NGA">
-        <strong>NGA</strong>
-        <span id="ngaTabCount">0 invitations</span>
-      </button>
       <button class="program-tab" id="usagTab" type="button" role="tab" data-program="USAG">
         <strong>USAG</strong>
         <span id="usagTabCount">0 invitations</span>
+      </button>
+      <button class="program-tab" id="ngaTab" type="button" role="tab" data-program="NGA">
+        <strong>NGA</strong>
+        <span id="ngaTabCount">0 invitations</span>
       </button>
     </div>
 
@@ -1377,10 +1355,6 @@
       previewBody: document.getElementById("previewBody"),
       copyButton: document.getElementById("copyButton"),
       printButton: document.getElementById("printButton"),
-      exportButton: document.getElementById("exportButton"),
-      importButton: document.getElementById("importButton"),
-      importFile: document.getElementById("importFile"),
-      resetButton: document.getElementById("resetButton"),
       templateDialog: document.getElementById("templateDialog"),
       templateHeading: document.getElementById("templateHeading"),
       templateFields: document.getElementById("templateFields"),
@@ -1389,7 +1363,7 @@
       toast: document.getElementById("toast")
     };
 
-    let activeProgram = "NGA";
+    let activeProgram = "USAG";
     let activeInviteId = null;
     let searchTerm = "";
     let selectedStatus = "All";
@@ -2178,69 +2152,6 @@
       saveState();
     }
 
-    function exportBackup() {
-      const backup = {
-        version: DATA_VERSION,
-        exportedAt: new Date().toISOString(),
-        templates: state.templates,
-        invites: state.invites
-      };
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `team-invites-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-      showToast("Backup exported.");
-    }
-
-    async function importBackup(file) {
-      if (!file) return;
-      try {
-        const imported = normalizeState(JSON.parse(await file.text()));
-        const count = imported.invites.length;
-        const proceed = window.confirm(
-          `Replace the current app data with this backup containing ${pluralize(count, "invitation")}?`
-        );
-        if (!proceed) return;
-        state = imported;
-        activeProgram = "NGA";
-        activeInviteId = invitesForProgram("NGA")[0]?.id || null;
-        searchTerm = "";
-        selectedStatus = "All";
-        hideMode = false;
-        elements.searchInput.value = "";
-        renderStatusOptions();
-        saveState("Backup imported.");
-        render();
-      } catch (error) {
-        console.error("Could not import Team Invitations backup.", error);
-        window.alert(error.message || "This file could not be imported.");
-      } finally {
-        elements.importFile.value = "";
-      }
-    }
-
-    function resetApp() {
-      const proceed = window.confirm(
-        "Reset Team Invitations? This permanently clears every saved invitation and both program templates from this browser."
-      );
-      if (!proceed) return;
-      state = blankState();
-      activeProgram = "NGA";
-      activeInviteId = null;
-      searchTerm = "";
-      selectedStatus = "All";
-      hideMode = false;
-      elements.searchInput.value = "";
-      renderStatusOptions();
-      saveState("App reset.");
-      render();
-    }
-
     elements.tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
         activeProgram = tab.dataset.program;
@@ -2296,10 +2207,6 @@
     });
     elements.copyButton.addEventListener("click", copyActiveInvite);
     elements.printButton.addEventListener("click", printActiveInvite);
-    elements.exportButton.addEventListener("click", exportBackup);
-    elements.importButton.addEventListener("click", () => elements.importFile.click());
-    elements.importFile.addEventListener("change", (event) => importBackup(event.currentTarget.files[0]));
-    elements.resetButton.addEventListener("click", resetApp);
 
     renderStatusOptions();
     activeInviteId = invitesForProgram(activeProgram)
